@@ -3725,5 +3725,577 @@ body { font-weight: 400; font-style: normal; text-decoration: none; text-transfo
         </div>
       </div>
 </div>
+
+<!-- AI Text Generator Button -->
+<button id="ai-fab" onclick="toggleAIPanel()" title="AI Text Generator">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 3 3v1a3 3 0 0 1-2 2.83V18a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-4.17A3 3 0 0 1 4 11v-1a3 3 0 0 1 3-3h1V6a4 4 0 0 1 4-4z"/>
+    <circle cx="9" cy="13" r="1" fill="currentColor"/>
+    <circle cx="15" cy="13" r="1" fill="currentColor"/>
+    <path d="M10 17h4"/>
+  </svg>
+</button>
+
+<!-- AI Generator Panel -->
+<div id="ai-panel" class="ai-panel">
+  <div class="ai-panel-header">
+    <h3 class="ai-panel-title">AI Text Generator</h3>
+    <button class="ai-panel-close" onclick="toggleAIPanel()">&times;</button>
+  </div>
+
+  <div class="ai-panel-body">
+    <!-- API Key Setup -->
+    <div id="ai-key-section" class="ai-field">
+      <label class="ai-label">OpenAI API Key</label>
+      <div style="display:flex;gap:8px">
+        <input id="ai-api-key" type="password" class="ai-input" placeholder="sk-..." style="flex:1">
+        <button class="ai-btn-copy" onclick="saveApiKey()" style="white-space:nowrap;padding:8px 14px;font-weight:600">Guardar</button>
+      </div>
+      <div id="ai-key-status" style="font-size:12px;margin-top:6px;color:#6b7280"></div>
+    </div>
+
+    <!-- System Prompt -->
+    <div class="ai-field">
+      <label class="ai-label">System Prompt</label>
+      <textarea id="ai-system" class="ai-textarea" rows="3" placeholder="Ej: Eres un redactor profesional de marketing para una empresa de transporte y mensajeria en Ecuador...">Eres un redactor profesional de marketing para Lumer, una empresa de transporte de carga y motoentrega en Ecuador. Escribes textos claros, persuasivos y profesionales en espanol.</textarea>
+    </div>
+
+    <!-- User Prompt -->
+    <div class="ai-field">
+      <label class="ai-label">Prompt <span style="color:#e53e3e">*</span></label>
+      <textarea id="ai-prompt" class="ai-textarea" rows="4" placeholder="Escribe aqui tu solicitud..."></textarea>
+    </div>
+
+    <!-- Parameters Row -->
+    <div class="ai-params-grid">
+      <div class="ai-field">
+        <label class="ai-label">Model</label>
+        <select id="ai-model" class="ai-select">
+          <option value="gpt-4o-mini" selected>GPT-4o Mini</option>
+          <option value="gpt-4o">GPT-4o</option>
+          <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
+          <option value="gpt-4.1-nano">GPT-4.1 Nano</option>
+        </select>
+      </div>
+      <div class="ai-field">
+        <label class="ai-label">Max Tokens</label>
+        <input id="ai-max-tokens" type="number" class="ai-input" value="1024" min="1" max="16384">
+      </div>
+    </div>
+
+    <div class="ai-params-grid">
+      <div class="ai-field">
+        <label class="ai-label">Temperature <span id="ai-temp-val" class="ai-val">0.7</span></label>
+        <input id="ai-temperature" type="range" class="ai-range" min="0" max="2" step="0.05" value="0.7" oninput="document.getElementById('ai-temp-val').textContent=this.value">
+      </div>
+      <div class="ai-field">
+        <label class="ai-label">Top P <span id="ai-topp-val" class="ai-val">1.0</span></label>
+        <input id="ai-top-p" type="range" class="ai-range" min="0" max="1" step="0.05" value="1.0" oninput="document.getElementById('ai-topp-val').textContent=this.value">
+      </div>
+    </div>
+
+    <div class="ai-params-grid">
+      <div class="ai-field">
+        <label class="ai-label">Frequency Penalty <span id="ai-fp-val" class="ai-val">0.0</span></label>
+        <input id="ai-freq-penalty" type="range" class="ai-range" min="0" max="2" step="0.1" value="0" oninput="document.getElementById('ai-fp-val').textContent=this.value">
+      </div>
+      <div class="ai-field">
+        <label class="ai-label">Presence Penalty <span id="ai-pp-val" class="ai-val">0.0</span></label>
+        <input id="ai-pres-penalty" type="range" class="ai-range" min="0" max="2" step="0.1" value="0" oninput="document.getElementById('ai-pp-val').textContent=this.value">
+      </div>
+    </div>
+
+    <div class="ai-field">
+      <label class="ai-label">Stop Sequences <span class="ai-hint">(comma separated, optional)</span></label>
+      <input id="ai-stop" type="text" class="ai-input" placeholder="Ej: ###, END">
+    </div>
+
+    <!-- Generate Button -->
+    <button id="ai-generate-btn" class="ai-btn-generate" onclick="handleGenerate()">
+      Generar texto
+    </button>
+
+    <!-- Status -->
+    <div id="ai-status" class="ai-status" style="display:none"></div>
+
+    <!-- Result -->
+    <div id="ai-result-container" class="ai-result-container" style="display:none">
+      <div class="ai-result-header">
+        <span class="ai-result-title">Resultado</span>
+        <div class="ai-result-actions">
+          <button class="ai-btn-copy" onclick="copyResult()" title="Copiar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copiar
+          </button>
+        </div>
+      </div>
+      <div id="ai-result" class="ai-result-text"></div>
+      <div id="ai-meta" class="ai-result-meta"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI Panel Overlay -->
+<div id="ai-overlay" class="ai-overlay" onclick="toggleAIPanel()"></div>
+
+<style>
+/* AI FAB Button */
+#ai-fab {
+  position: fixed;
+  bottom: 30px;
+  right: 130px;
+  z-index: 100;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #33AB65, #2a8f54);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(51,171,101,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+#ai-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 24px rgba(51,171,101,0.5);
+}
+
+/* Overlay */
+.ai-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
+.ai-overlay.active { display: block; }
+
+/* Panel */
+.ai-panel {
+  position: fixed;
+  top: 0;
+  right: -520px;
+  width: 500px;
+  max-width: 95vw;
+  height: 100vh;
+  z-index: 1000;
+  background: #ffffff;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+  transition: right 0.35s cubic-bezier(0.4,0,0.2,1);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Raleway', 'Inter', sans-serif;
+}
+.ai-panel.active { right: 0; }
+
+.ai-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e8e8e8;
+  background: linear-gradient(135deg, #33AB65 0%, #2a8f54 100%);
+}
+.ai-panel-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+.ai-panel-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  border: none;
+}
+.ai-panel-close:hover { background: rgba(255,255,255,0.35); }
+
+.ai-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+/* Fields */
+.ai-field {
+  margin-bottom: 16px;
+}
+.ai-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+.ai-hint {
+  font-weight: 400;
+  color: #9ca3af;
+  font-size: 11px;
+}
+.ai-val {
+  font-weight: 400;
+  color: #33AB65;
+  font-size: 12px;
+  float: right;
+}
+.ai-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.2s;
+  background: #fafafa;
+  color: #1f2937;
+  box-sizing: border-box;
+}
+.ai-textarea:focus {
+  outline: none;
+  border-color: #33AB65;
+  box-shadow: 0 0 0 3px rgba(51,171,101,0.1);
+  background: #fff;
+}
+.ai-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  background: #fafafa;
+  color: #1f2937;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.ai-input:focus {
+  outline: none;
+  border-color: #33AB65;
+  box-shadow: 0 0 0 3px rgba(51,171,101,0.1);
+}
+.ai-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  background: #fafafa;
+  color: #1f2937;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.ai-select:focus {
+  outline: none;
+  border-color: #33AB65;
+}
+.ai-range {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 3px;
+  background: #e5e7eb;
+  outline: none;
+}
+.ai-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #33AB65;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+.ai-params-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Generate Button */
+.ai-btn-generate {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #33AB65, #2a8f54);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+.ai-btn-generate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(51,171,101,0.4);
+}
+.ai-btn-generate:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.ai-btn-generate.loading {
+  position: relative;
+  color: transparent;
+}
+.ai-btn-generate.loading::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  top: 50%;
+  left: 50%;
+  margin-left: -11px;
+  margin-top: -11px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Status */
+.ai-status {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.ai-status.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+.ai-status.info {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+/* Result */
+.ai-result-container {
+  margin-top: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.ai-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+.ai-result-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+.ai-result-actions { display: flex; gap: 8px; }
+.ai-btn-copy {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  color: #374151;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ai-btn-copy:hover {
+  background: #f3f4f6;
+  border-color: #33AB65;
+  color: #33AB65;
+}
+.ai-result-text {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #1f2937;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.ai-result-meta {
+  padding: 8px 16px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  font-size: 11px;
+  color: #6b7280;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+</style>
+
+<script>
+function toggleAIPanel() {
+  var panel = document.getElementById('ai-panel');
+  var overlay = document.getElementById('ai-overlay');
+  var isOpening = !panel.classList.contains('active');
+  panel.classList.toggle('active');
+  overlay.classList.toggle('active');
+  if (isOpening) checkApiKey();
+}
+
+function checkApiKey() {
+  google.script.run
+    .withSuccessHandler(function(result) {
+      var section = document.getElementById('ai-key-section');
+      var status = document.getElementById('ai-key-status');
+      if (result.hasKey) {
+        status.innerHTML = '&#10003; API key configurada';
+        status.style.color = '#33AB65';
+        document.getElementById('ai-api-key').placeholder = '••••••••  (ya guardada)';
+      } else {
+        status.textContent = 'No hay API key. Ingresa tu clave para empezar.';
+        status.style.color = '#e53e3e';
+      }
+    })
+    .getApiKeyStatus();
+}
+
+function saveApiKey() {
+  var key = document.getElementById('ai-api-key').value.trim();
+  if (!key) return;
+  google.script.run
+    .withSuccessHandler(function() {
+      var status = document.getElementById('ai-key-status');
+      status.innerHTML = '&#10003; API key guardada correctamente';
+      status.style.color = '#33AB65';
+      document.getElementById('ai-api-key').value = '';
+      document.getElementById('ai-api-key').placeholder = '••••••••  (ya guardada)';
+    })
+    .withFailureHandler(function(e) {
+      document.getElementById('ai-key-status').textContent = 'Error: ' + e.message;
+    })
+    .setApiKey(key);
+}
+
+function handleGenerate() {
+  var prompt = document.getElementById('ai-prompt').value.trim();
+  if (!prompt) {
+    showStatus('Por favor, escribe un prompt.', 'error');
+    return;
+  }
+
+  var btn = document.getElementById('ai-generate-btn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = 'Generando...';
+  hideStatus();
+  document.getElementById('ai-result-container').style.display = 'none';
+
+  var params = {
+    userPrompt: prompt,
+    systemPrompt: document.getElementById('ai-system').value,
+    model: document.getElementById('ai-model').value,
+    maxTokens: document.getElementById('ai-max-tokens').value,
+    temperature: document.getElementById('ai-temperature').value,
+    topP: document.getElementById('ai-top-p').value,
+    frequencyPenalty: document.getElementById('ai-freq-penalty').value,
+    presencePenalty: document.getElementById('ai-pres-penalty').value,
+    stop: document.getElementById('ai-stop').value
+  };
+
+  google.script.run
+    .withSuccessHandler(onGenerateSuccess)
+    .withFailureHandler(onGenerateError)
+    .generateText(params);
+}
+
+function onGenerateSuccess(result) {
+  resetButton();
+
+  if (!result.success) {
+    showStatus('Error API: ' + result.error, 'error');
+    return;
+  }
+
+  document.getElementById('ai-result').textContent = result.text;
+
+  var meta = '';
+  if (result.usage) {
+    meta += 'Tokens: ' + result.usage.prompt_tokens + ' prompt + ' +
+            result.usage.completion_tokens + ' completion = ' +
+            result.usage.total_tokens + ' total';
+  }
+  if (result.model) meta += ' | Modelo: ' + result.model;
+  if (result.finish_reason) meta += ' | Razon: ' + result.finish_reason;
+
+  document.getElementById('ai-meta').textContent = meta;
+  document.getElementById('ai-result-container').style.display = 'block';
+
+  document.getElementById('ai-result-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function onGenerateError(error) {
+  resetButton();
+  showStatus('Error: ' + error.message, 'error');
+}
+
+function resetButton() {
+  var btn = document.getElementById('ai-generate-btn');
+  btn.disabled = false;
+  btn.classList.remove('loading');
+  btn.textContent = 'Generar texto';
+}
+
+function showStatus(msg, type) {
+  var el = document.getElementById('ai-status');
+  el.textContent = msg;
+  el.className = 'ai-status ' + type;
+  el.style.display = 'block';
+}
+
+function hideStatus() {
+  document.getElementById('ai-status').style.display = 'none';
+}
+
+function copyResult() {
+  var text = document.getElementById('ai-result').textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.querySelector('.ai-btn-copy');
+      btn.textContent = 'Copiado!';
+      setTimeout(function() { btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar'; }, 1500);
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+}
+</script>
+
 </body>
 </html>
