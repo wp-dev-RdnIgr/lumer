@@ -1,0 +1,3729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumer - Transporte de Carga &amp; Motoentrega</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/animate.css@4.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css">
+  <style>
+/* Reset styles */
+html { line-height: 1.15; }
+body { margin: 0; }
+* { box-sizing: border-box; border-width: 0; border-style: solid; -webkit-font-smoothing: antialiased; }
+p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption { margin: 0; padding: 0; }
+button { background-color: transparent; }
+button,input,optgroup,select,textarea { font-family: inherit; font-size: 100%; line-height: 1.15; margin: 0; }
+button,select { text-transform: none; }
+button,[type="button"],[type="reset"],[type="submit"] { -webkit-appearance: button; color: inherit; }
+a { color: inherit; text-decoration: inherit; }
+img { display: block; }
+html { scroll-behavior: smooth; }
+html { font-family: Inter; font-size: 16px; }
+body { font-weight: 400; font-style: normal; text-decoration: none; text-transform: none; letter-spacing: normal; line-height: 1.15; color: var(--dl-color-theme-neutral-dark); background: var(--dl-color-theme-neutral-light); fill: var(--dl-color-theme-neutral-dark); }
+
+
+:root {
+  --dl-layout-size-large: 144px;
+  --dl-layout-size-small: 48px;
+  --dl-layout-space-unit: 16px;
+  --dl-layout-size-medium: 96px;
+  --dl-layout-size-xlarge: 192px;
+  --dl-layout-size-xsmall: 16px;
+  --dl-color-theme-accent1: #FFFFFF;
+  --dl-color-theme-accent2: #F5D1B0;
+  --dl-layout-radius-round: 50%;
+  --dl-layout-size-xxlarge: 288px;
+  --dl-color-theme-primary1: #BF4408;
+  --dl-color-theme-primary2: #E65103;
+  --dl-layout-size-maxwidth: 1400px;
+  --dl-layout-radius-radius2: 2px;
+  --dl-layout-radius-radius4: 4px;
+  --dl-layout-radius-radius8: 8px;
+  --dl-layout-space-halfunit: 8px;
+  --dl-layout-space-sixunits: 96px;
+  --dl-layout-space-twounits: 32px;
+  --dl-color-theme-secondary1: #FFFFFF;
+  --dl-color-theme-secondary2: #FBF1EB;
+  --dl-layout-space-fiveunits: 80px;
+  --dl-layout-space-fourunits: 64px;
+  --dl-layout-space-threeunits: 48px;
+  --dl-color-theme-neutral-dark: #191818;
+  --dl-layout-radius-cardradius: 8px;
+  --dl-color-theme-neutral-light: #FBFAF9;
+  --dl-layout-radius-imageradius: 8px;
+  --dl-layout-radius-inputradius: 24px;
+  --dl-layout-radius-buttonradius: 24px;
+  --dl-layout-space-oneandhalfunits: 24px;
+}
+ 
+.button {
+  color: var(--dl-color-theme-neutral-dark);
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-color: var(--dl-color-theme-neutral-dark);
+  border-width: 1px;
+  border-radius: 4px;
+  background-color: var(--dl-color-theme-neutral-light);
+}
+ 
+.input {
+  color: var(--dl-color-theme-neutral-dark);
+  cursor: auto;
+  padding: 0.5rem 1rem;
+  border-color: var(--dl-color-theme-neutral-dark);
+  border-width: 1px;
+  border-radius: 4px;
+  background-color: var(--dl-color-theme-neutral-light);
+}
+ 
+.textarea {
+  color: var(--dl-color-theme-neutral-dark);
+  cursor: auto;
+  padding: 0.5rem;
+  border-color: var(--dl-color-theme-neutral-dark);
+  border-width: 1px;
+  border-radius: 4px;
+  background-color: var(--dl-color-theme-neutral-light);
+}
+ 
+.list {
+  width: 100%;
+  margin: 1em 0px 1em 0px;
+  display: block;
+  padding: 0px 0px 0px 1.5rem;
+  list-style-type: none;
+  list-style-position: outside;
+}
+ 
+.list-item {
+  display: list-item;
+}
+ 
+.teleport-show {
+  display: flex !important;
+  transform: none !important;
+}
+ 
+.thq-input {
+  color: var(--dl-color-theme-neutral-dark);
+  cursor: auto;
+  outline: none;
+  padding: 0.5rem 1rem;
+  align-self: stretch;
+  text-align: center;
+  border-color: var(--dl-color-theme-neutral-dark);
+  border-width: 1px;
+  border-radius: var(--dl-layout-radius-inputradius);
+  background-color: var(--dl-color-theme-neutral-light);
+}
+ 
+.thq-input:focus {
+  outline: 1px solid var(--dl-color-theme-primary1);
+}
+ 
+.thq-button-filled {
+  gap: var(--dl-layout-space-halfunit);
+  fill: var(--dl-color-theme-secondary1);
+  color: var(--dl-color-theme-secondary1);
+  cursor: pointer;
+  display: flex;
+  transition: 0.3s;
+  align-items: center;
+  font-weight: bold;
+  padding-top: var(--dl-layout-space-halfunit);
+  white-space: nowrap;
+  border-color: var(--dl-color-theme-primary1);
+  border-width: 1px;
+  padding-left: var(--dl-layout-space-oneandhalfunits);
+  border-radius: var(--dl-layout-radius-buttonradius);
+  padding-right: var(--dl-layout-space-oneandhalfunits);
+  padding-bottom: var(--dl-layout-space-halfunit);
+  justify-content: center;
+  background-color: var(--dl-color-theme-primary1);
+}
+ 
+.thq-button-filled:hover {
+  fill: var(--dl-color-theme-secondary2);
+  color: var(--dl-color-theme-secondary2);
+  border-color: var(--dl-color-theme-primary2);
+  background-color: var(--dl-color-theme-primary2);
+}
+ 
+.thq-button-outline {
+  gap: var(--dl-layout-space-halfunit);
+  fill: var(--dl-color-theme-primary1);
+  color: var(--dl-color-theme-primary1);
+  border: 1px solid;
+  cursor: pointer;
+  display: flex;
+  transition: 0.3s;
+  align-items: center;
+  font-weight: bold;
+  padding-top: var(--dl-layout-space-halfunit);
+  white-space: nowrap;
+  border-color: var(--dl-color-theme-primary1);
+  padding-left: var(--dl-layout-space-oneandhalfunits);
+  border-radius: var(--dl-layout-radius-buttonradius);
+  padding-right: var(--dl-layout-space-oneandhalfunits);
+  padding-bottom: var(--dl-layout-space-halfunit);
+  justify-content: center;
+}
+ 
+.thq-button-outline:hover {
+  fill: var(--dl-color-theme-secondary2);
+  color: var(--dl-color-theme-secondary2);
+  border-color: var(--dl-color-theme-primary2);
+  background-color: var(--dl-color-theme-primary2);
+}
+ 
+.thq-button-flat {
+  gap: var(--dl-layout-space-halfunit);
+  fill: var(--dl-color-theme-primary1);
+  color: var(--dl-color-theme-primary1);
+  cursor: pointer;
+  display: flex;
+  transition: 0.3s;
+  align-items: center;
+  font-weight: bold;
+  padding-top: var(--dl-layout-space-halfunit);
+  white-space: nowrap;
+  border-color: transparent;
+  border-width: 1px;
+  padding-left: var(--dl-layout-space-oneandhalfunits);
+  border-radius: var(--dl-layout-radius-buttonradius);
+  padding-right: var(--dl-layout-space-oneandhalfunits);
+  padding-bottom: var(--dl-layout-space-halfunit);
+  justify-content: center;
+}
+ 
+.thq-button-flat:hover {
+  fill: var(--dl-color-theme-secondary1);
+  color: var(--dl-color-theme-secondary1);
+  border-color: var(--dl-color-theme-primary2);
+  background-color: var(--dl-color-theme-primary2);
+}
+ 
+.thq-heading-1 {
+  font-size: 48px;
+  font-family: STIX Two Text;
+  font-weight: 700;
+  line-height: 1.5;
+}
+ 
+.thq-heading-2 {
+  font-size: 35px;
+  font-family: STIX Two Text;
+  font-weight: 600;
+  line-height: 1.5;
+}
+ 
+.thq-heading-3 {
+  font-size: 26px;
+  font-family: STIX Two Text;
+  font-weight: 600;
+  line-height: 1.5;
+}
+ 
+.thq-body-large {
+  font-size: 18px;
+  font-family: Noto Sans;
+  line-height: 1.5;
+}
+ 
+.thq-body-small {
+  font-size: 16px;
+  font-family: Noto Sans;
+  line-height: 1.5;
+}
+ 
+.thq-team-image-round {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+ 
+.thq-section-padding {
+  width: 100%;
+  display: flex;
+  padding: var(--dl-layout-space-fiveunits);
+  position: relative;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.thq-section-max-width {
+  width: 100%;
+  max-width: var(--dl-layout-size-maxwidth);
+}
+ 
+.thq-img-ratio-1-1 {
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+  border-radius: var(--dl-layout-radius-imageradius);
+}
+ 
+.thq-img-ratio-16-9 {
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 16/9;
+  border-radius: var(--dl-layout-radius-imageradius);
+}
+ 
+.thq-img-ratio-4-3 {
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 4/3;
+  border-radius: var(--dl-layout-radius-imageradius);
+}
+ 
+.thq-img-ratio-4-6 {
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 4/6;
+  border-radius: var(--dl-layout-radius-imageradius);
+}
+ 
+.thq-img-round {
+  width: 100%;
+  border-radius: var(--dl-layout-radius-round);
+}
+ 
+.thq-flex-column {
+  gap: var(--dl-layout-space-twounits);
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.thq-flex-row {
+  gap: var(--dl-layout-space-twounits);
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+}
+ 
+.thq-grid-6 {
+  display: grid;
+  grid-gap: var(--dl-layout-space-twounits);
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+ 
+.thq-grid-5 {
+  display: grid;
+  grid-gap: var(--dl-layout-space-twounits);
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+ 
+.thq-card {
+  gap: var(--dl-layout-space-oneandhalfunits);
+  display: flex;
+  padding: var(--dl-layout-space-twounits);
+  align-items: stretch;
+  border-radius: var(--dl-layout-radius-cardradius);
+  flex-direction: column;
+}
+ 
+.thq-box-shadow {
+  box-shadow: 0px 0px 5px -2px var(--dl-color-theme-neutral-dark);
+}
+ 
+.thq-grid-3 {
+  display: grid;
+  grid-gap: var(--dl-layout-space-twounits);
+  grid-template-columns: 1fr 1fr 1fr;
+}
+ 
+.thq-grid-4 {
+  display: grid;
+  grid-gap: var(--dl-layout-space-twounits);
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+ 
+.thq-grid-2 {
+  width: 100%;
+  display: grid;
+  grid-gap: var(--dl-layout-space-twounits);
+  grid-template-columns: 1fr 1fr;
+}
+ 
+.thq-checkbox {
+  width: var(--dl-layout-size-xsmall);
+  height: var(--dl-layout-size-xsmall);
+}
+ 
+.thq-select {
+  cursor: pointer;
+  appearance: none;
+  padding-top: var(--dl-layout-space-halfunit);
+  padding-left: var(--dl-layout-space-unit);
+  border-radius: var(--dl-layout-radius-inputradius);
+  padding-right: var(--dl-layout-space-twounits);
+  padding-bottom: var(--dl-layout-space-halfunit);
+  background-color: var(--dl-color-theme-neutral-light);
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg width%3D%2220%22 height%3D%2220%22 xmlns%3D%22http%3A//www.w3.org/2000/svg%22 viewBox%3D%220 0 20 20%22 fill%3D%22%23000%22%3E%3Cpath d%3D%22M4.293 7.293a1 1 0 011.414 0L10 11.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414z%22/%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+ 
+.thq-divider-horizontal {
+  width: 100%;
+  height: 1px;
+  background-color: var(--dl-color-theme-neutral-dark);
+}
+ 
+.thq-icon-small {
+  width: 24px;
+  height: 24px;
+}
+ 
+.thq-button-icon {
+  fill: var(--dl-color-theme-secondary1);
+  padding: 3px;
+  transition: 0.3s;
+  border-radius: var(--dl-layout-radius-round);
+}
+ 
+.thq-button-icon:hover {
+  fill: var(--dl-color-theme-secondary2);
+}
+ 
+.thq-icon-medium {
+  width: var(--dl-layout-size-small);
+  height: var(--dl-layout-size-small);
+}
+ 
+.thq-icon-x-small {
+  width: var(--dl-layout-size-xsmall);
+  height: var(--dl-layout-size-xsmall);
+}
+ 
+.thq-link {
+  cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
+  background: linear-gradient(to right, var(--dl-color-theme-primary1) 50%, var(--dl-color-theme-neutral-dark) 50%);
+  transition: background-position 300ms ease;
+  font-weight: 600;
+  background-clip: text;
+  background-size: 200% 100%;
+  background-position: 100%;
+  -webkit-text-fill-color: transparent;
+}
+ 
+.thq-link:hover {
+  background-position: 0 100%;
+}
+ 
+.thq-grid-auto-300 {
+  display: grid;
+  grid-gap: var(--dl-layout-space-oneandhalfunits);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+ 
+.thq-animated-group-vertical-reverse {
+  gap: var(--dl-layout-space-unit);
+  width: 100%;
+  display: flex;
+  animation: scroll-y 20s linear infinite;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: space-around;
+  animation-direction: reverse;
+}
+ 
+.thq-animated-group-horizontal-reverse {
+  gap: var(--dl-layout-space-unit);
+  display: flex;
+  animation: scroll-x 20s linear infinite;
+  min-width: 100%;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: space-around;
+  animation-direction: reverse;
+}
+ 
+.thq-animated-group-vertical {
+  gap: var(--dl-layout-space-unit);
+  width: 100%;
+  display: flex;
+  animation: scroll-y 20s linear infinite;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: space-around;
+}
+ 
+.thq-animated-group-horizontal {
+  gap: var(--dl-layout-space-unit);
+  display: flex;
+  animation: scroll-x 20s linear infinite;
+  min-width: 100%;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: space-around;
+}
+ 
+.thq-animated-group-container-vertical {
+  gap: var(--dl-layout-space-unit);
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+}
+ 
+.thq-animated-group-container-horizontal {
+  gap: var(--dl-layout-space-unit);
+  display: flex;
+  overflow: hidden;
+}
+ 
+.thq-mask-image-vertical {
+  mask-image: linear-gradient(to bottom, transparent, black 1%, black 99%, transparent);
+}
+ 
+.thq-mask-image-horizontal {
+  mask-image: linear-gradient(to right, transparent, black 1%, black 99%, transparent);
+}
+ 
+.thq-img-scale {
+  transition: 0.3s;
+}
+ 
+.thq-img-scale:hover {
+  scale: 1.05;
+}
+ 
+.thq-animated-card-bg-1 {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s;
+  border-radius: var(--dl-layout-radius-cardradius);
+  background-color: var(--dl-color-theme-accent1);
+}
+ 
+.thq-animated-card-bg-2 {
+  transition: transform 0.3s;
+  border-radius: var(--dl-layout-radius-cardradius);
+  background-color: var(--dl-color-theme-accent2);
+}
+ 
+.thq-button-animated {
+  outline: none;
+  z-index: 1;
+  overflow: hidden;
+  position: relative;
+  border-width: 2px;
+}
+ 
+.thq-input::placeholder {
+  text-align: center;
+  vertical-align: middle;
+}
+ 
+.thq-animated-group-container-vertical:hover div {
+  animation-play-state: paused;
+}
+ 
+.thq-animated-group-container-horizontal:hover div {
+  animation-play-state: paused;
+}
+ 
+.thq-animated-card-bg-2:has([data-animated="true"]:hover) {
+  transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(3deg) skew(0deg, 0deg);
+}
+ 
+.thq-animated-card-bg-1:has([data-animated="true"]:hover) {
+  transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(-6deg) skew(0deg, 0deg);
+}
+ 
+.thq-button-animated:before {
+  top: 0;
+  left: -20%;
+  color: var(--dl-color-theme-neutral-light);
+  width: 200%;
+  height: 101%;
+  content: "";
+  z-index: 1;
+  position: absolute;
+  transform: scaleX(0);
+  transition: transform 0.5s;
+  border-radius: var(--dl-layout-radius-buttonradius);
+  background-color: var(--dl-color-theme-neutral-dark);
+  transform-origin: 0 0;
+  transition-timing-function: cubic-bezier(0.5, 1.6, 0.4, 0.7);
+}
+ 
+.thq-button-animated:hover::before {
+  color: var(--dl-color-theme-neutral-light);
+  z-index: -1;
+  transform: scaleX(1);
+}
+ 
+.Content {
+  font-size: 16px;
+  font-family: Inter;
+  font-weight: 400;
+  line-height: 1.15;
+  text-transform: none;
+  text-decoration: none;
+}
+ 
+@media(max-width: 991px) {
+  .thq-grid-4 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+ 
+@media(max-width: 767px) {
+  .thq-section-padding {
+    padding: var(--dl-layout-space-threeunits);
+  }
+  .thq-flex-column {
+    gap: var(--dl-layout-space-oneandhalfunits);
+  }
+  .thq-flex-row {
+    gap: var(--dl-layout-space-oneandhalfunits);
+  }
+  .thq-grid-6 {
+    grid-gap: var(--dl-layout-space-oneandhalfunits);
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .thq-grid-5 {
+    grid-gap: var(--dl-layout-space-oneandhalfunits);
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .thq-card {
+    padding: var(--dl-layout-space-oneandhalfunits);
+  }
+  .thq-grid-3 {
+    grid-gap: var(--dl-layout-space-oneandhalfunits);
+    grid-template-columns: 1fr 1fr;
+  }
+  .thq-grid-4 {
+    grid-gap: var(--dl-layout-space-oneandhalfunits);
+    flex-direction: row;
+    grid-template-columns: 1fr 1fr;
+  }
+  .thq-grid-2 {
+    grid-gap: var(--dl-layout-space-oneandhalfunits);
+    grid-template-columns: 1fr;
+  }
+  .thq-img-scale {
+    width: 100%;
+  }
+}
+ 
+@media(max-width: 479px) {
+  .thq-section-padding {
+    padding: var(--dl-layout-space-oneandhalfunits);
+  }
+  .thq-flex-column {
+    gap: var(--dl-layout-space-unit);
+  }
+  .thq-flex-row {
+    gap: var(--dl-layout-space-unit);
+  }
+  .thq-grid-6 {
+    grid-gap: var(--dl-layout-space-unit);
+    grid-template-columns: 1fr 1fr;
+  }
+  .thq-grid-5 {
+    grid-gap: var(--dl-layout-space-unit);
+    grid-template-columns: 1fr 1fr;
+  }
+  .thq-grid-3 {
+    grid-gap: var(--dl-layout-space-unit);
+    align-items: center;
+    grid-template-columns: 1fr;
+  }
+  .thq-grid-4 {
+    grid-gap: var(--dl-layout-space-unit);
+    align-items: center;
+    flex-direction: column;
+    grid-template-columns: 1fr;
+  }
+  .thq-grid-2 {
+    grid-gap: var(--dl-layout-space-unit);
+  }
+  .thq-grid-auto-300 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-container1 {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-elm {
+  width: 2063px;
+  height: 5226px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(0, 0, 0, 0.10000000149011612);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-frame1920wlight-elm {
+  top: 100px;
+  left: 100px;
+  width: 1920px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  background-color: rgba(244, 244, 244, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divroot-elm {
+  width: 1920px;
+  height: 5025.60986328125px;
+  display: flex;
+  position: relative;
+  align-self: stretch;
+  align-items: flex-start;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-main-elm {
+  top: 232px;
+  left: 0px;
+  width: 1920px;
+  height: 4528.22021484375px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcontainer-elm1 {
+  gap: 48px;
+  top: 0px;
+  left: 300px;
+  width: 1320px;
+  display: flex;
+  padding: 0 12px;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divimageabsoluteheader-elm {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-homeheaderd3aa3091ce6a751a6c78png-elm {
+  width: 950px;
+  height: 879.6300048828125px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_-8ybjogmp7-wxjn-1500h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection1-elm {
+  gap: 29.700000762939453px;
+  display: flex;
+  padding: 35.13999938964844px 18px 53.9900016784668px;
+  z-index: 1;
+  overflow: hidden;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1-elm1 {
+  width: 750px;
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm10 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 59.400001525878906px;
+  font-style: ExtraBold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 800;
+  line-height: 71.27999877929688px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h2-elm1 {
+  width: 500px;
+  display: flex;
+  padding: 17px 0 6.489999771118164px;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm13 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 36px;
+  font-style: ExtraBold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 800;
+  line-height: 43.20000076293945px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbtn1-elm {
+  gap: 5px;
+  display: flex;
+  padding: 15px 115.91999816894531px;
+  overflow: hidden;
+  box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.019999999552965164) ;
+  align-items: center;
+  border-radius: 40px;
+  justify-content: center;
+  background-color: rgba(51, 171, 101, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm14 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 50px;
+  font-style: ExtraBold;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 800;
+  line-height: 60px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-spancursor-elm {
+  width: 0.009999999776482582px;
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h2-elm2 {
+  width: 500px;
+  display: flex;
+  padding: 5.394999980926514px 0 18.28499984741211px;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm15 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 36px;
+  font-style: ExtraBold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 800;
+  line-height: 43.20000076293945px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection2-elm {
+  gap: 9.947598300641403e-14px;
+  display: flex;
+  padding: 0 0 90px;
+  z-index: 2;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1mb3margin-elm {
+  width: 259.3299865722656px;
+  height: 54.38999938964844px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm18 {
+  top: -1px;
+  color: rgba(33, 37, 41, 1);
+  width: 260px;
+  height: auto;
+  position: absolute;
+  font-size: 32px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 38.400001525878906px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbox-elm1 {
+  gap: 18px;
+  display: flex;
+  padding: 36px;
+  position: relative;
+  align-self: stretch;
+  align-items: flex-start;
+  border-radius: 36px;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm10 {
+  top: -7.449999809265137px;
+  left: -648px;
+  width: 540px;
+  height: 541px;
+  opacity: 0.54;
+  position: absolute;
+  border-radius: 270px;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divdeliverytypeselectormargin-elm {
+  display: flex;
+  padding: 0 0 24px;
+  z-index: 1;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divdeliverytypeselector-elm {
+  gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-buttondeliverytypebtn-elm1 {
+  width: 140px;
+  height: 131px;
+  display: flex;
+  opacity: 0.60;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(222, 226, 230, 1);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 18px;
+  background-color: rgba(248, 249, 250, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-apie-elm {
+  top: 13px;
+  left: 50px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_ctcw-v2y7r-jmae-200h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-span-elm1 {
+  top: 61px;
+  left: 25px;
+  width: 91px;
+  display: flex;
+  padding: 0 23.899999618530273px 0 23.90999984741211px;
+  position: absolute;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm19 {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Medium;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-small-elm1 {
+  top: 90.5px;
+  left: 35.779998779296875px;
+  width: 69px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm20 {
+  color: rgba(108, 117, 125, 1);
+  height: auto;
+  font-size: 12px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-buttondeliverytypebtn-elm2 {
+  width: 140px;
+  height: 131px;
+  display: flex;
+  opacity: 0.60;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(222, 226, 230, 1);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 18px;
+  background-color: rgba(248, 249, 250, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-enmoto-elm {
+  top: 13px;
+  left: 50px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_6szgqwkxvp-yswxl7-200h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-span-elm2 {
+  top: 61px;
+  left: 25px;
+  width: 91px;
+  display: flex;
+  padding: 0 9.869999885559082px 0 9.880000114440918px;
+  position: absolute;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm21 {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Medium;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-small-elm2 {
+  top: 90.5px;
+  left: 31.40999984741211px;
+  width: 78px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm22 {
+  color: rgba(108, 117, 125, 1);
+  height: auto;
+  font-size: 12px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-buttondeliverytypebtn-elm3 {
+  width: 140px;
+  height: 131px;
+  display: flex;
+  position: relative;
+  box-shadow: 0px 2px 8px 0px rgba(62, 255, 72, 0.20000000298023224) ;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(51, 171, 101, 1);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 18px;
+  background-color: rgba(241, 255, 240, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-encamin-elm {
+  top: 13px;
+  left: 50px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  overflow: hidden;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_hvsbpdxofg-un1o-200h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-span-elm3 {
+  top: 61px;
+  left: 25px;
+  width: 91px;
+  display: flex;
+  padding: 0 0.9599999785423279px 0 0.949999988079071px;
+  position: absolute;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm23 {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Medium;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-small-elm3 {
+  top: 90.5px;
+  left: 39.13999938964844px;
+  width: 62px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm24 {
+  color: rgba(108, 117, 125, 1);
+  height: auto;
+  font-size: 12px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divrowmargin-elm {
+  width: 1224px;
+  height: 93px;
+  display: flex;
+  z-index: 2;
+  position: relative;
+  align-self: stretch;
+  align-items: flex-start;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divrow-elm {
+  top: 0px;
+  left: -12px;
+  width: 1248px;
+  display: flex;
+  position: absolute;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  flex-shrink: 0;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcol-elm1 {
+  display: flex;
+  padding: 0 12px;
+  flex-grow: 1;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm1 {
+  gap: 8px;
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm25 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-inputformcontrol-elm1 {
+  height: 42px;
+  display: flex;
+  padding: 10.5px 16px;
+  overflow: hidden;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(197, 198, 204, 1);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 8px;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divplaceholder-elm1 {
+  display: flex;
+  overflow: hidden;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm26 {
+  color: rgba(143, 144, 152, 1);
+  height: auto;
+  font-size: 16px;
+  align-self: stretch;
+  font-style: Medium;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcol-elm2 {
+  display: flex;
+  padding: 0 12px;
+  flex-grow: 1;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm2 {
+  gap: 8px;
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm27 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Regular;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-inputformcontrol-elm2 {
+  height: 42px;
+  display: flex;
+  padding: 10.5px 16px;
+  overflow: hidden;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-color: rgba(197, 198, 204, 1);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 8px;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divplaceholder-elm2 {
+  display: flex;
+  overflow: hidden;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm28 {
+  color: rgba(143, 144, 152, 1);
+  height: auto;
+  font-size: 16px;
+  align-self: stretch;
+  font-style: Medium;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbuttonmargin-elm {
+  display: flex;
+  padding: 0 0 24px;
+  z-index: 3;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbutton-elm {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-buttonbtn3-elm1 {
+  display: flex;
+  padding: 18px 108px;
+  box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.019999999552965164) ;
+  align-items: center;
+  border-radius: 18px;
+  justify-content: center;
+  background-color: rgba(51, 171, 101, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm29 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Bold;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 21.600000381469727px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divp0-elm {
+  top: 2434.800048828125px;
+  left: 300px;
+  width: 1320px;
+  height: 2093.419921875px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection4-elm {
+  top: 0px;
+  left: 0px;
+  width: 1320px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm11 {
+  top: 0px;
+  left: 858px;
+  width: 990px;
+  height: 990px;
+  opacity: 0.50;
+  position: absolute;
+  border-radius: 495px;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbox-elm2 {
+  gap: 18px;
+  display: flex;
+  padding: 54px;
+  z-index: 1;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 36px;
+  background-color: rgba(255, 255, 255, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divimage-elm {
+  width: 597px;
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-g1021120fbab8e3b4508b1cpng-elm {
+  width: 597px;
+  height: 597px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-self: stretch;
+  align-items: flex-start;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_uslhtqovnr-2sl3-600h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcontent-elm1 {
+  gap: -2.8421709430404007e-13px;
+  width: 597px;
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1margin-elm1 {
+  width: 597px;
+  height: 383.79998779296875px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm30 {
+  top: -1.375px;
+  color: rgba(33, 37, 41, 1);
+  width: 404px;
+  height: auto;
+  position: absolute;
+  font-size: 64.80000305175781px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 77.76000213623047px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-buttonbtn3-elm2 {
+  display: flex;
+  padding: 18px 108px;
+  box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.019999999552965164) ;
+  align-items: center;
+  border-radius: 18px;
+  justify-content: center;
+  background-color: rgba(51, 171, 101, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm35 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Bold;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 21.600000381469727px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection6-elm {
+  top: 1742.219970703125px;
+  left: 0px;
+  width: 1320px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divlogo-elm {
+  display: flex;
+  position: relative;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm12 {
+  top: -159.86000061035156px;
+  left: 147.5px;
+  width: 365px;
+  height: 365px;
+  position: absolute;
+  border-radius: 182.5px;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-logo6ea0dccb303e2b713b52png-elm {
+  width: 230px;
+  height: 45.29999923706055px;
+  display: flex;
+  z-index: 1;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_vwirvdukgq-hcpp-1500h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcontent-elm2 {
+  width: 660px;
+  height: 351.20001220703125px;
+  display: flex;
+  z-index: 1;
+  position: relative;
+  flex-grow: 1;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1margin-elm2 {
+  top: 0px;
+  left: 0px;
+  width: 660px;
+  height: 85.75px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1-elm2 {
+  top: -1px;
+  left: 0px;
+  width: 660px;
+  display: flex;
+  padding: 0 0 0.75px;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm36 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 64.80000305175781px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 77.76000213623047px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divtitlemargin-elm {
+  top: 103.75px;
+  left: 0px;
+  width: 660px;
+  height: 68.95999908447266px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divtitle-elm {
+  top: -0.9649999737739563px;
+  left: 0px;
+  width: 660px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm37 {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  font-size: 23.399999618530273px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 28px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divdesc-elm1 {
+  top: 189.3249969482422px;
+  left: 0px;
+  width: 660px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm40 {
+  color: rgba(116, 116, 116, 1);
+  height: auto;
+  font-size: 19.799999237060547px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 600;
+  line-height: 23.760000228881836px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divdesc-elm2 {
+  top: 302.57501220703125px;
+  left: 0px;
+  width: 660px;
+  display: flex;
+  padding: 0 0 0.625px;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm45 {
+  color: rgba(116, 116, 116, 1);
+  height: auto;
+  font-size: 19.799999237060547px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 600;
+  line-height: 23.760000228881836px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm13 {
+  top: 61.43000030517578px;
+  left: 1224px;
+  width: 360px;
+  height: 360px;
+  opacity: 0.50;
+  z-index: 2;
+  position: absolute;
+  border-radius: 180px;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection5-elm {
+  gap: -1.8474111129762605e-13px;
+  top: 759px;
+  left: 0px;
+  width: 1320px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm14 {
+  top: 0px;
+  left: -264px;
+  width: 360px;
+  height: 360px;
+  opacity: 0.50;
+  position: absolute;
+  border-radius: 180px;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1margin-elm3 {
+  display: flex;
+  padding: 0 0 8px;
+  z-index: 1;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1-elm3 {
+  height: 97.19999694824219px;
+  display: flex;
+  padding: 0 0 1.2000000476837158px;
+  align-items: center;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm48 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 64.80000305175781px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 77.76000213623047px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm49 {
+  color: rgba(51, 171, 101, 1);
+  height: auto;
+  font-size: 64.80000305175781px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 97.19999694824219px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcomponentgrid-elm {
+  width: 996px;
+  height: 770.02001953125px;
+  display: flex;
+  z-index: 2;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcenterimage-elm {
+  display: flex;
+  padding: 0 25px;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm15 {
+  top: 111.94000244140625px;
+  left: 7.71999979019165px;
+  width: 386px;
+  height: 386px;
+  position: absolute;
+  border-radius: 193px;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-central-elm {
+  width: 350px;
+  height: 639.8900146484375px;
+  display: flex;
+  z-index: 1;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_dqzwgnfgvj-3r3a-1500h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divleftitems-elm {
+  width: 280px;
+  height: 639.8900146484375px;
+  display: flex;
+  padding: 36px 0;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divgriditem-elm1 {
+  width: 280px;
+  height: 295.80999755859375px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm3 {
+  gap: 6.75px;
+  top: 71px;
+  left: 0px;
+  width: 280px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h3itemtitle-elm1 {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-end;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm50 {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  font-size: 23.399999618530273px;
+  font-style: Bold;
+  text-align: right;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 28px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-pitemdesc-elm1 {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-end;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm51 {
+  color: rgba(116, 116, 116, 1);
+  height: auto;
+  font-size: 19.799999237060547px;
+  font-style: SemiBold;
+  text-align: right;
+  font-family: Raleway;
+  font-weight: 600;
+  line-height: 23.760000228881836px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitemnumber-elm1 {
+  top: 0px;
+  left: 243.33999633789062px;
+  width: 19px;
+  display: flex;
+  padding: 0 0 18px;
+  position: absolute;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm16 {
+  top: 0px;
+  left: -21.559999465942383px;
+  width: 60px;
+  height: 60px;
+  position: absolute;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divgriditem-elm2 {
+  width: 280px;
+  height: 272.0799865722656px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm4 {
+  gap: 6.875px;
+  top: 71px;
+  left: 0px;
+  width: 279px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h3itemtitle-elm2 {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-end;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm55 {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  font-size: 23.399999618530273px;
+  font-style: Bold;
+  text-align: right;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 28px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-pitemdesc-elm2 {
+  display: flex;
+  padding: 0 0 0.625px;
+  align-self: stretch;
+  align-items: flex-end;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm56 {
+  color: rgba(116, 116, 116, 1);
+  height: auto;
+  font-size: 19.799999237060547px;
+  font-style: SemiBold;
+  text-align: right;
+  font-family: Raleway;
+  font-weight: 600;
+  line-height: 23.760000228881836px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitemnumber-elm2 {
+  top: 0px;
+  left: 241.52000427246094px;
+  width: 21px;
+  display: flex;
+  padding: 0 0 18px;
+  position: absolute;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm17 {
+  top: 0px;
+  left: -19.559999465942383px;
+  width: 60px;
+  height: 60px;
+  position: absolute;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divrightitems-elm {
+  width: 280px;
+  height: 639.8900146484375px;
+  display: flex;
+  padding: 36px 0;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divgriditem-elm3 {
+  width: 280px;
+  height: 283.94000244140625px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm5 {
+  gap: 6.75px;
+  top: 71px;
+  left: 0px;
+  width: 280px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h3itemtitle-elm3 {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm59 {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  font-size: 23.399999618530273px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 28px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-pitemdesc-elm3 {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm60 {
+  color: rgba(116, 116, 116, 1);
+  height: auto;
+  font-size: 19.799999237060547px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 600;
+  line-height: 23.760000228881836px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitemnumber-elm3 {
+  top: 0px;
+  left: 18px;
+  width: 21px;
+  display: flex;
+  padding: 0 0 18px;
+  position: absolute;
+  align-items: flex-start;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm18 {
+  top: 0px;
+  left: -19.440000534057617px;
+  width: 60px;
+  height: 60px;
+  position: absolute;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divgriditem-elm4 {
+  width: 280px;
+  height: 283.95001220703125px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm6 {
+  gap: 6.75px;
+  top: 71px;
+  left: 0px;
+  width: 274px;
+  display: flex;
+  position: absolute;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h3itemtitle-elm4 {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm64 {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  font-size: 23.399999618530273px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 28px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-pitemdesc-elm4 {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm65 {
+  color: rgba(116, 116, 116, 1);
+  height: auto;
+  font-size: 19.799999237060547px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 600;
+  line-height: 23.760000228881836px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitemnumber-elm4 {
+  top: 0px;
+  left: 18px;
+  width: 21px;
+  display: flex;
+  padding: 0 0 18px;
+  position: absolute;
+  align-items: flex-start;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm19 {
+  top: 0px;
+  left: -19.440000534057617px;
+  width: 60px;
+  height: 60px;
+  position: absolute;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbottomitem-elm {
+  gap: 24px;
+  display: flex;
+  align-items: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbottomnumbermargin-elm {
+  display: flex;
+  padding: 0 18px 0 0;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbottomnumber-elm {
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm20 {
+  top: 0px;
+  left: -19.559999465942383px;
+  width: 60px;
+  height: 60px;
+  z-index: 1;
+  position: absolute;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbottomcontent-elm {
+  gap: 11.550000190734863px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h3bottomtitle-elm {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm69 {
+  color: rgba(0, 0, 0, 1);
+  height: auto;
+  font-size: 23.399999618530273px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 28px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-pbottomdesc-elm {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm70 {
+  color: rgba(116, 116, 116, 1);
+  height: auto;
+  font-size: 19.799999237060547px;
+  font-style: SemiBold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 600;
+  line-height: 23.760000228881836px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection3-elm {
+  top: 1234.800048828125px;
+  left: 0px;
+  width: 1920px;
+  height: 1200px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  flex-shrink: 0;
+  flex-direction: column;
+  background-size: cover;
+  justify-content: center;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_heae-rohzh-oo8-2000w.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divtextcenter-elm {
+  gap: -5.6843418860808015e-14px;
+  display: flex;
+  padding: 0 12px;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1margin-elm4 {
+  width: 750px;
+  height: 220.3000030517578px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1-elm4 {
+  top: -1.125px;
+  left: 0px;
+  width: 750px;
+  display: flex;
+  padding: 0 41.119998931884766px 0.625px 41.130001068115234px;
+  position: absolute;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm74 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 64.80000305175781px;
+  font-style: Bold;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 77.76000213623047px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiper-elm {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperwrapper-elm {
+  width: 2554.6298828125px;
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm1 {
+  height: 147px;
+  display: flex;
+  padding: 0 20px 0 0;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm1 {
+  width: 299.3299865722656px;
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm1 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm1 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-muebles-elm {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_y25vupsf_j-q3ft-200h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm77 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm2 {
+  height: 147px;
+  display: flex;
+  padding: 0 20px 0 0;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm2 {
+  width: 299.3299865722656px;
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm2 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm2 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-juguetes-elm {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_ac3qiwsave-mjbe-200h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm78 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm3 {
+  height: 147px;
+  display: flex;
+  padding: 0 20px 0 0;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm3 {
+  width: 299.3299865722656px;
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm3 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm3 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-electrodomsticos-elm {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_i7_h8zpbb4-19vz-200h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm79 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm4 {
+  height: 147px;
+  display: flex;
+  padding: 0 20px 0 0;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm4 {
+  width: 299.3299865722656px;
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm4 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm4 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-productos-elm {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_nkw2vap5jh-72m9-200h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm80 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm5 {
+  height: 147px;
+  display: flex;
+  padding: 0 20px 0 0;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm5 {
+  width: 299.3299865722656px;
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm5 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm5 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-documentos-elm {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_h_4cqo03im-w5f-200h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm81 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm6 {
+  height: 147px;
+  display: flex;
+  padding: 0 20px 0 0;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm6 {
+  width: 299.3299865722656px;
+  display: flex;
+  flex-grow: 1;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm6 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm6 {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-comidaderestaurantes-elm {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_4d_hsdboew-e2nb-200h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm82 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Regular;
+  text-align: center;
+  font-family: Raleway;
+  font-weight: 400;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm7 {
+  width: 319.3299865722656px;
+  height: 147px;
+  display: flex;
+  position: relative;
+  align-self: stretch;
+  align-items: flex-start;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm8 {
+  width: 319.3299865722656px;
+  height: 147px;
+  display: flex;
+  position: relative;
+  align-self: stretch;
+  align-items: flex-start;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperbuttonprev-elm {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  opacity: 0.35;
+  z-index: 1;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 20px;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.4000000059604645);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-frame-elm1 {
+  width: 20px;
+  height: 20px;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperbuttonnext-elm {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  z-index: 2;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 20px;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.4000000059604645);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-frame-elm2 {
+  width: 20px;
+  height: 20px;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-header-elm {
+  top: 0px;
+  left: 0px;
+  width: 1920px;
+  height: 160px;
+  display: flex;
+  padding: 0 300px;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcontainer-elm2 {
+  gap: 247.69000244140625px;
+  display: flex;
+  padding: 0 12px;
+  flex-grow: 1;
+  align-self: stretch;
+  align-items: center;
+  justify-content: space-between;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-alogo-elm {
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm21 {
+  top: -103.5px;
+  left: -34.5px;
+  width: 230px;
+  height: 230px;
+  position: absolute;
+  border-radius: 115px;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-logo-elm {
+  width: 169.97000122070312px;
+  height: 33.47999954223633px;
+  display: flex;
+  z-index: 1;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_rwkdaflxlb-9r97-1500h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divheadermenumargin-elm {
+  display: flex;
+  padding: 0 0 0 50px;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divheadermenu-elm {
+  gap: 9px;
+  display: flex;
+  align-items: center;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-ame2margin-elm1 {
+  display: flex;
+  padding: 0 8px 0 0;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm83 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-ame2margin-elm2 {
+  display: flex;
+  padding: 0 8px 0 0;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm84 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-ame2margin-elm3 {
+  display: flex;
+  padding: 0 8px 0 0;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm85 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-ame2margin-elm4 {
+  display: flex;
+  padding: 0 8px 0 0;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm86 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm1 {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm87 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-spancityselectormargin-elm {
+  display: flex;
+  padding: 0 8px 0 0;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm88 {
+  color: rgba(33, 37, 41, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Bold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 700;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-footer-elm {
+  top: 4850.22021484375px;
+  left: 0px;
+  width: 1920px;
+  display: flex;
+  padding: 53px 312px 54px;
+  position: absolute;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+  background-color: rgba(22, 22, 22, 1);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divfootercontent-elm {
+  gap: 160.3000030517578px;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  flex-shrink: 0;
+  justify-content: space-between;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divfootercontacts-elm {
+  gap: 8px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divphone-elm {
+  display: flex;
+  padding: 0 0 0.800000011920929px;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm89 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 25.200000762939453px;
+  font-style: ExtraBold;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 800;
+  line-height: 37.79999923706055px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divemail-elm {
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm90 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 14.399999618530273px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: 21.600000381469727px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divfooterlogo-elm {
+  display: flex;
+  padding: 0 10px;
+  align-items: flex-start;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-lumer-cargo-logo-elm {
+  width: 120px;
+  height: 60px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  background-size: cover;
+  background-image: url("https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/tq_6ycprmh0mv-dze-200h.png");
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divfooterlinks-elm {
+  gap: 9px;
+  display: flex;
+  align-items: flex-start;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm2 {
+  height: 27px;
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm91 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm3 {
+  height: 27px;
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm92 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm4 {
+  height: 27px;
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm93 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm5 {
+  height: 27px;
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm94 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm6 {
+  height: 27px;
+  display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm95 {
+  color: rgba(255, 255, 255, 1);
+  height: auto;
+  font-size: 18px;
+  font-style: Medium;
+  text-align: left;
+  font-family: Raleway;
+  font-weight: 500;
+  line-height: 27px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-link {
+  display: contents;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-container2 {
+  right: 50px;
+  border: 1px solid #ffffff5c;
+  bottom: 30px;
+  display: flex;
+  z-index: 22;
+  position: fixed;
+  box-shadow: 5px 5px 10px 0px rgba(31, 31, 31, 0.4);
+  min-height: auto;
+  align-items: center;
+  padding-top: 8px;
+  padding-left: 12px;
+  border-radius: 8px;
+  padding-right: 12px;
+  padding-bottom: 8px;
+  backdrop-filter: blur(6px);
+  background-color: rgba(41, 41, 41, 0.41);
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-icon1 {
+  width: 24px;
+  margin-right: 4px;
+}
+ 
+.lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-text30 {
+  color: white;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.not-found-container1 {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.not-found-container2 {
+  display: flex;
+  position: relative;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.not-found-text2 {
+  color: rgb(38, 38, 38);
+  font-size: 252px;
+  margin-top: -20px;
+  font-weight: 900;
+  margin-bottom: -20px;
+  letter-spacing: -20px;
+}
+ 
+.not-found-container3 {
+  width: 421px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+ 
+.not-found-text3 {
+  text-align: center;
+  font-weight: 400;
+}
+  </style>
+</head>
+<body>
+<div id="app">
+    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-container1">
+      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-elm">
+        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-frame1920wlight-elm">
+          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divroot-elm">
+            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-main-elm">
+              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcontainer-elm1">
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divimageabsoluteheader-elm">
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-homeheaderd3aa3091ce6a751a6c78png-elm"></div>
+                </div>
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection1-elm">
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1-elm1">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm10">
+                      <span>TRANSPORTE DE CARGA</span>
+                      <br>
+                      <span>&amp; MOTOENTREGA</span>
+                    </span>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h2-elm1">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm13">
+                      Lleva lo que necesites:
+                    </span>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbtn1-elm">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm14">
+                      juguetes
+                    </span>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-spancursor-elm"></div>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h2-elm2">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm15">
+                      <span>de forma rápida y sin</span>
+                      <br>
+                      <span>complicaciones</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection2-elm">
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1mb3margin-elm">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm18">
+                      Tipos de entrega
+                    </span>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbox-elm1">
+                    <img
+                      src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore123-lrgm-600w.png"
+                      alt="IMAGEbefore123"
+                      class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm10"
+                    />
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divdeliverytypeselectormargin-elm">
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divdeliverytypeselector-elm">
+                        <button class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-buttondeliverytypebtn-elm1">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-apie-elm"></div>
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-span-elm1">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm19">
+                              A pie
+                            </span>
+                          </div>
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-small-elm1">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm20">
+                              (hasta 10 kg)
+                            </span>
+                          </div>
+                        </button>
+                        <button class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-buttondeliverytypebtn-elm2">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-enmoto-elm"></div>
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-span-elm2">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm21">
+                              En moto
+                            </span>
+                          </div>
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-small-elm2">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm22">
+                              (hasta 500 kg)
+                            </span>
+                          </div>
+                        </button>
+                        <button class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-buttondeliverytypebtn-elm3">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-encamin-elm"></div>
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-span-elm3">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm23">
+                              En camión
+                            </span>
+                          </div>
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-small-elm3">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm24">
+                              (hasta 3.5 t)
+                            </span>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divrowmargin-elm">
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divrow-elm">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcol-elm1">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm1">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm25">
+                              Desde (dirección)
+                            </span>
+                            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-inputformcontrol-elm1">
+                              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divplaceholder-elm1">
+                                <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm26">
+                                  Desde (dirección)
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcol-elm2">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm2">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm27">
+                              Hasta (dirección)
+                            </span>
+                            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-inputformcontrol-elm2">
+                              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divplaceholder-elm2">
+                                <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm28">
+                                  Hasta (dirección)
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbuttonmargin-elm">
+                      <button class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbutton-elm">
+                        <button class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-buttonbtn3-elm1">
+                          <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm29">
+                            Calcular el valor
+                          </span>
+                        </button>
+                      </button>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divp0-elm">
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection4-elm">
+                  <img
+                    src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore164-qp9e-1000w.png"
+                    alt="IMAGEbefore164"
+                    class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm11"
+                  />
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbox-elm2">
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divimage-elm">
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-g1021120fbab8e3b4508b1cpng-elm"></div>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcontent-elm1">
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1margin-elm1">
+                        <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm30">
+                          <span>Descubre las</span>
+                          <br>
+                          <span>ventajas de</span>
+                          <br>
+                          <span>trabajar con</span>
+                          <br>
+                          <span>nosotros</span>
+                        </span>
+                      </div>
+                      <button class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-buttonbtn3-elm2">
+                        <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm35">
+                          Calcular el valor
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection6-elm">
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divlogo-elm">
+                    <img
+                      src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore175-anm-400h.png"
+                      alt="IMAGEbefore175"
+                      class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm12"
+                    />
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-logo6ea0dccb303e2b713b52png-elm"></div>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcontent-elm2">
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1margin-elm2">
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1-elm2">
+                        <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm36">
+                          Sobre nosotros
+                        </span>
+                      </div>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divtitlemargin-elm">
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divtitle-elm">
+                        <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm37">
+                          <span>
+                            Somos un equipo joven de Ecuador, unidos por el amor
+                            a
+                          </span>
+                          <br>
+                          <span>
+                            nuestro país y el deseo de impulsarlo hacia el
+                            futuro.
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divdesc-elm1">
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm40">
+                        <span>
+                          Creemos firmemente que la tecnología puede transformar
+                          nuestro día
+                        </span>
+                        <br>
+                        <span>
+                          a día y contribuir al crecimiento y bienestar de
+                          nuestra sociedad.
+                        </span>
+                        <br>
+                        <span>
+                          Ecuador no solo es tierra de belleza natural y cultura
+                          vibrante —
+                        </span>
+                        <br>
+                        <span>también es un país lleno de potencial.</span>
+                      </span>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divdesc-elm2">
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm45">
+                        <span>
+                          Con soluciones innovadoras queremos apoyar a los
+                          negocios locales,
+                        </span>
+                        <br>
+                        <span>
+                          generar empleo y ser parte de un futuro más próspero
+                          para todos.
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                  <img
+                    src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore188-gty-400h.png"
+                    alt="IMAGEbefore188"
+                    class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm13"
+                  />
+                </div>
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection5-elm">
+                  <img
+                    src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore190-dlna-400h.png"
+                    alt="IMAGEbefore190"
+                    class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm14"
+                  />
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1margin-elm3">
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1-elm3">
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm48">
+                        ¿Cómo 
+                      </span>
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm49">
+                        funciona?
+                      </span>
+                    </div>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcomponentgrid-elm">
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcenterimage-elm">
+                      <img
+                        src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore197-a8uq-400h.png"
+                        alt="IMAGEbefore197"
+                        class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm15"
+                      />
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-central-elm"></div>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divleftitems-elm">
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divgriditem-elm1">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm3">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h3itemtitle-elm1">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm50">
+                              Elige la ciudad
+                            </span>
+                          </div>
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-pitemdesc-elm1">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm51">
+                              <span>Operamos dentro de las</span>
+                              <br>
+                              <span>principales ciudades. Solo</span>
+                              <br>
+                              <span>selecciona la que necesitas</span>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitemnumber-elm1">
+                          <img
+                            src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore1107-7x2a-200h.png"
+                            alt="IMAGEbefore1107"
+                            class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm16"
+                          />
+                        </div>
+                      </div>
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divgriditem-elm2">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm4">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h3itemtitle-elm2">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm55">
+                              Realiza tu pedido
+                            </span>
+                          </div>
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-pitemdesc-elm2">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm56">
+                              <span>¡Listo! El conductor se pondrá</span>
+                              <br>
+                              <span>en contacto contigo</span>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitemnumber-elm2">
+                          <img
+                            src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore1116-yu4m-200h.png"
+                            alt="IMAGEbefore1116"
+                            class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm17"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divrightitems-elm">
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divgriditem-elm3">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm5">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h3itemtitle-elm3">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm59">
+                              Calcula el precio
+                            </span>
+                          </div>
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-pitemdesc-elm3">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm60">
+                              <span>Ingresa las direcciones de</span>
+                              <br>
+                              <span>origen y destino — nuestro</span>
+                              <br>
+                              <span>sistema te dará el costo</span>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitemnumber-elm3">
+                          <img
+                            src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore1126-5o0g-200h.png"
+                            alt="IMAGEbefore1126"
+                            class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm18"
+                          />
+                        </div>
+                      </div>
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divgriditem-elm4">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-div-elm6">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h3itemtitle-elm4">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm64">
+                              Recibe la confirmación
+                            </span>
+                          </div>
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-pitemdesc-elm4">
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm65">
+                              <span>Te enviaremos un SMS con el</span>
+                              <br>
+                              <span>número del pedido y el</span>
+                              <br>
+                              <span>contacto del conductor</span>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitemnumber-elm4">
+                          <img
+                            src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore1135-98eq-200h.png"
+                            alt="IMAGEbefore1135"
+                            class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm19"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbottomitem-elm">
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbottomnumbermargin-elm">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbottomnumber-elm">
+                          <img
+                            src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore1141-bihs-200h.png"
+                            alt="IMAGEbefore1141"
+                            class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm20"
+                          />
+                        </div>
+                      </div>
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divbottomcontent-elm">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h3bottomtitle-elm">
+                          <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm69">
+                            Pago directo al conductor
+                          </span>
+                        </div>
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-pbottomdesc-elm">
+                          <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm70">
+                            <span>Paga en efectivo al recibir el</span>
+                            <br>
+                            <span>servicio. Sin comisiones ni cargos</span>
+                            <br>
+                            <span>extra</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divsection3-elm">
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divtextcenter-elm">
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1margin-elm4">
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-h1-elm4">
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm74">
+                        <span>¿Qué se puede enviar</span>
+                        <br>
+                        <span>por mensajería?</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiper-elm">
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperwrapper-elm">
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm1">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm1">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm1">
+                            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm1">
+                              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-muebles-elm"></div>
+                            </div>
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm77">
+                              Muebles
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm2">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm2">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm2">
+                            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm2">
+                              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-juguetes-elm"></div>
+                            </div>
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm78">
+                              Juguetes
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm3">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm3">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm3">
+                            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm3">
+                              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-electrodomsticos-elm"></div>
+                            </div>
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm79">
+                              Electrodomésticos
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm4">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm4">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm4">
+                            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm4">
+                              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-productos-elm"></div>
+                            </div>
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm80">
+                              Productos
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm5">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm5">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm5">
+                            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm5">
+                              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-documentos-elm"></div>
+                            </div>
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm81">
+                              Documentos
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm6">
+                        <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslide-elm6">
+                          <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divitem-elm6">
+                            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divicon-elm6">
+                              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-comidaderestaurantes-elm"></div>
+                            </div>
+                            <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm82">
+                              Comida de restaurantes
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm7"></div>
+                      <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperslidemargin-elm8"></div>
+                    </div>
+                    <button class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperbuttonprev-elm">
+                      <img
+                        src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/frame1193-9nt4.svg"
+                        alt="Frame1193"
+                        class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-frame-elm1"
+                      />
+                    </button>
+                    <button class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divswiperbuttonnext-elm">
+                      <img
+                        src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/frame1196-3slg.svg"
+                        alt="Frame1196"
+                        class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-frame-elm2"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-header-elm">
+              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divcontainer-elm2">
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-alogo-elm">
+                  <img
+                    src="https://raw.githubusercontent.com/wp-dev-RdnIgr/lumer/claude/explore-project-YGaH0/imagebefore1201-pr-300h.png"
+                    alt="IMAGEbefore1201"
+                    class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-imag-ebefore-elm21"
+                  />
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-logo-elm"></div>
+                </div>
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divheadermenumargin-elm">
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divheadermenu-elm">
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-ame2margin-elm1">
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm83">
+                        Calcular envío
+                      </span>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-ame2margin-elm2">
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm84">
+                        Para empresas
+                      </span>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-ame2margin-elm3">
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm85">
+                        Conviértete en conductor
+                      </span>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-ame2margin-elm4">
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm86">
+                        Iniciar sesión
+                      </span>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm1">
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm87">
+                        Registrarse
+                      </span>
+                    </div>
+                    <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-spancityselectormargin-elm">
+                      <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm88">
+                        Ciudad
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-footer-elm">
+              <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divfootercontent-elm">
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divfootercontacts-elm">
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divphone-elm">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm89">
+                      +593 983 688 183
+                    </span>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divemail-elm">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm90">
+                      transporteslumrom@gmail.com
+                    </span>
+                  </div>
+                </div>
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divfooterlogo-elm">
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-lumer-cargo-logo-elm"></div>
+                </div>
+                <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-divfooterlinks-elm">
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm2">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm91">
+                      Principal
+                    </span>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm3">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm92">
+                      Tipos de entrega
+                    </span>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm4">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm93">
+                      Calcular el valor
+                    </span>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm5">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm94">
+                      Ventajas
+                    </span>
+                  </div>
+                  <div class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-a-elm6">
+                    <span class="lumromcom-spanish-m-xbyhtmltodesign-fre-eversion2603202-thq-text-elm95">
+                      Acuerdo de usuario
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+</body>
+</html>
