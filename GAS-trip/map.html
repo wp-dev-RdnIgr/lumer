@@ -1,0 +1,247 @@
+<script>
+// ========== MAP MANAGER ==========
+const MapManager = {
+  map: null,
+  clusterGroup: null,
+  markersById: {},       // attractionId -> L.marker
+  routeLayers: [],       // active route polylines
+  stopMarkers: [],       // numbered stop markers
+  homeMarker: null,
+  routeCache: {},        // hash -> {geometry, duration, distance}
+
+  init() {
+    this.map = L.map('map', {
+      center: [32.75, -16.95],
+      zoom: 10,
+      zoomControl: true,
+      maxBounds: [[32.2, -17.5], [33.2, -16.2]],
+      minZoom: 9
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',
+      maxZoom: 18
+    }).addTo(this.map);
+
+    this.clusterGroup = L.markerClusterGroup({
+      maxClusterRadius: 40,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      iconCreateFunction: function(cluster) {
+        const count = cluster.getChildCount();
+        let size = 'small';
+        if (count > 10) size = 'medium';
+        if (count > 25) size = 'large';
+        return L.divIcon({
+          html: `<div class="cluster-icon cluster-${size}">${count}</div>`,
+          className: '',
+          iconSize: [36, 36]
+        });
+      }
+    });
+    this.map.addLayer(this.clusterGroup);
+
+    // Home marker (Machico)
+    this.homeMarker = L.marker([HOME_BASE.lat, HOME_BASE.lng], {
+      icon: L.divIcon({
+        html: '<div class="home-marker">🏠</div>',
+        className: '',
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+      }),
+      zIndexOffset: 1000
+    }).addTo(this.map);
+    this.homeMarker.bindPopup(`<div class="popup-content"><div class="popup-title">🏠 ${HOME_BASE.name}</div><div class="popup-desc">Ваша база на Мадейре</div></div>`);
+  },
+
+  createMarkers() {
+    this.clusterGroup.clearLayers();
+    this.markersById = {};
+
+    for (const attr of ATTRACTIONS) {
+      const cat = getCategoryById(attr.category_id);
+      if (!cat) continue;
+
+      const marker = L.marker([attr.lat, attr.lng], {
+        icon: L.divIcon({
+          html: `<div class="custom-marker" style="background:${cat.color}">${cat.emoji}</div>`,
+          className: '',
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          popupAnchor: [0, -16]
+        })
+      });
+
+      const difficultyRu = { easy: 'легко', moderate: 'средне', hard: 'сложно' };
+      const diffText = attr.difficulty ? ` | ${difficultyRu[attr.difficulty] || attr.difficulty}` : '';
+
+      marker.bindPopup(`
+        <div class="popup-content">
+          <div class="popup-title">${cat.emoji} ${attr.name}</div>
+          <div class="popup-category" style="color:${cat.color}">${cat.nameRu}</div>
+          <div class="popup-desc">${attr.description || ''}</div>
+          ${attr.tips ? `<div class="popup-tips">💡 ${attr.tips}</div>` : ''}
+          <div class="popup-meta">⏱ ${formatDuration(attr.duration)}${diffText}</div>
+          <button class="popup-add-btn" onclick="App.showAddModal('${attr.id}')">+ Добавить в маршрут</button>
+        </div>
+      `, { maxWidth: 260 });
+
+      marker.attractionId = attr.id;
+      this.markersById[attr.id] = marker;
+      this.clusterGroup.addLayer(marker);
+    }
+  },
+
+  filterByCategories(activeCategories) {
+    this.clusterGroup.clearLayers();
+    for (const attr of ATTRACTIONS) {
+      if (activeCategories.has(attr.category_id)) {
+        const marker = this.markersById[attr.id];
+        if (marker) this.clusterGroup.addLayer(marker);
+      }
+    }
+  },
+
+  highlightAttraction(attractionId) {
+    const marker = this.markersById[attractionId];
+    if (!marker) return;
+    this.clusterGroup.zoomToShowLayer(marker, () => {
+      marker.openPopup();
+    });
+  },
+
+  clearRoutes() {
+    for (const layer of this.routeLayers) {
+      this.map.removeLayer(layer);
+    }
+    this.routeLayers = [];
+    for (const m of this.stopMarkers) {
+      this.map.removeLayer(m);
+    }
+    this.stopMarkers = [];
+  },
+
+  async showDayRoute(dayIndex, attractionIds, color) {
+    if (!attractionIds || attractionIds.length === 0) return null;
+
+    // Build waypoints: Home -> attractions -> Home
+    const waypoints = [
+      [HOME_BASE.lng, HOME_BASE.lat],
+      ...attractionIds.map(id => {
+        const a = getAttractionById(id);
+        return a ? [a.lng, a.lat] : null;
+      }).filter(Boolean),
+      [HOME_BASE.lng, HOME_BASE.lat]
+    ];
+
+    if (waypoints.length < 3) return null;
+
+    // Check cache
+    const cacheKey = waypoints.map(w => `${w[0].toFixed(4)},${w[1].toFixed(4)}`).join(';');
+    let routeData = this.routeCache[cacheKey];
+
+    if (!routeData) {
+      try {
+        const coords = waypoints.map(w => `${w[0]},${w[1]}`).join(';');
+        const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (data.code === 'Ok' && data.routes && data.routes[0]) {
+          routeData = {
+            geometry: data.routes[0].geometry,
+            duration: data.routes[0].duration,
+            distance: data.routes[0].distance
+          };
+          this.routeCache[cacheKey] = routeData;
+        }
+      } catch (err) {
+        console.error('OSRM routing error:', err);
+        // Fallback: draw straight lines
+        const fallbackCoords = waypoints.map(w => [w[1], w[0]]);
+        const line = L.polyline(fallbackCoords, {
+          color: color,
+          weight: 3,
+          opacity: 0.7,
+          dashArray: '8,8'
+        }).addTo(this.map);
+        this.routeLayers.push(line);
+        return null;
+      }
+    }
+
+    if (!routeData) return null;
+
+    // Draw route polyline
+    const geoLayer = L.geoJSON(routeData.geometry, {
+      style: { color: color, weight: 4, opacity: 0.8 }
+    }).addTo(this.map);
+    this.routeLayers.push(geoLayer);
+
+    // Add numbered stop markers (skip home start/end)
+    for (let i = 0; i < attractionIds.length; i++) {
+      const attr = getAttractionById(attractionIds[i]);
+      if (!attr) continue;
+
+      const stopMarker = L.marker([attr.lat, attr.lng], {
+        icon: L.divIcon({
+          html: `<div class="route-stop-marker" style="background:${color}">${i + 1}</div>`,
+          className: '',
+          iconSize: [26, 26],
+          iconAnchor: [13, 13]
+        }),
+        zIndexOffset: 500
+      }).addTo(this.map);
+      this.stopMarkers.push(stopMarker);
+    }
+
+    return {
+      duration: routeData.duration,
+      distance: routeData.distance
+    };
+  },
+
+  async showAllDayRoutes(days) {
+    this.clearRoutes();
+    const results = [];
+
+    for (let i = 0; i < days.length; i++) {
+      const color = DAY_COLORS[i % DAY_COLORS.length];
+      const result = await this.showDayRoute(i, days[i].attractions, color);
+      results.push(result);
+      // Small delay to avoid OSRM rate limiting
+      if (i < days.length - 1) {
+        await new Promise(r => setTimeout(r, 200));
+      }
+    }
+
+    // Fit bounds to all routes
+    if (this.routeLayers.length > 0) {
+      const group = L.featureGroup(this.routeLayers);
+      this.map.fitBounds(group.getBounds().pad(0.1));
+    }
+
+    return results;
+  },
+
+  async showSingleDayRoute(dayIndex, days) {
+    this.clearRoutes();
+    if (dayIndex < 0 || dayIndex >= days.length) return null;
+
+    const color = DAY_COLORS[dayIndex % DAY_COLORS.length];
+    const result = await this.showDayRoute(dayIndex, days[dayIndex].attractions, color);
+
+    if (this.routeLayers.length > 0) {
+      const group = L.featureGroup(this.routeLayers);
+      this.map.fitBounds(group.getBounds().pad(0.1));
+    }
+
+    return result;
+  },
+
+  resetView() {
+    this.clearRoutes();
+    this.map.setView([32.75, -16.95], 10);
+  }
+};
+</script>
