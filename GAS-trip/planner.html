@@ -1,0 +1,348 @@
+<script>
+// ========== PLANNER MODULE ==========
+const Planner = {
+  tripState: {
+    days: [],
+    activeDayIndex: -1  // -1 = all days
+  },
+  routeResults: [],  // cached route info per day
+  debounceTimer: null,
+
+  init(numDays = 5) {
+    this.tripState.days = [];
+    for (let i = 0; i < numDays; i++) {
+      this.tripState.days.push({
+        label: `День ${i + 1}`,
+        attractions: []
+      });
+    }
+    this.routeResults = new Array(numDays).fill(null);
+    this.render();
+  },
+
+  loadPreset(presetKey) {
+    const preset = DEFAULT_ITINERARIES.find(p => p.id === presetKey);
+    if (!preset) return;
+
+    this.tripState.days = preset.days.map((d, i) => ({
+      label: d.label || `День ${i + 1}`,
+      attractions: [...d.attractionIds]
+    }));
+    this.routeResults = new Array(this.tripState.days.length).fill(null);
+    this.tripState.activeDayIndex = -1;
+    this.render();
+    this.updateRoutes();
+    AppEvents.emit('trip-updated');
+  },
+
+  addDay() {
+    const num = this.tripState.days.length + 1;
+    this.tripState.days.push({ label: `День ${num}`, attractions: [] });
+    this.routeResults.push(null);
+    this.render();
+    AppEvents.emit('trip-updated');
+  },
+
+  removeDay(dayIndex) {
+    if (this.tripState.days.length <= 1) return;
+    this.tripState.days.splice(dayIndex, 1);
+    this.routeResults.splice(dayIndex, 1);
+    if (this.tripState.activeDayIndex >= this.tripState.days.length) {
+      this.tripState.activeDayIndex = -1;
+    }
+    this.render();
+    this.updateRoutes();
+    AppEvents.emit('trip-updated');
+  },
+
+  addAttractionToDay(attractionId, dayIndex) {
+    if (dayIndex < 0 || dayIndex >= this.tripState.days.length) return;
+    const day = this.tripState.days[dayIndex];
+
+    // Check if already in this day
+    if (day.attractions.includes(attractionId)) {
+      App.showToast('Это место уже добавлено в этот день');
+      return;
+    }
+
+    day.attractions.push(attractionId);
+    this.routeResults[dayIndex] = null;
+    this.render();
+    this.debouncedUpdateRoutes();
+    AppEvents.emit('trip-updated');
+
+    const attr = getAttractionById(attractionId);
+    App.showToast(`${attr ? attr.name : ''} добавлено в ${day.label}`);
+  },
+
+  removeAttraction(attractionId, dayIndex) {
+    const day = this.tripState.days[dayIndex];
+    if (!day) return;
+    const idx = day.attractions.indexOf(attractionId);
+    if (idx === -1) return;
+    day.attractions.splice(idx, 1);
+    this.routeResults[dayIndex] = null;
+    this.render();
+    this.debouncedUpdateRoutes();
+    AppEvents.emit('trip-updated');
+  },
+
+  moveAttraction(dayIndex, fromIdx, toIdx) {
+    const day = this.tripState.days[dayIndex];
+    if (!day) return;
+    const [item] = day.attractions.splice(fromIdx, 1);
+    day.attractions.splice(toIdx, 0, item);
+    this.routeResults[dayIndex] = null;
+    this.render();
+    this.debouncedUpdateRoutes();
+  },
+
+  moveAttractionUp(dayIndex, itemIdx) {
+    if (itemIdx <= 0) return;
+    this.moveAttraction(dayIndex, itemIdx, itemIdx - 1);
+  },
+
+  moveAttractionDown(dayIndex, itemIdx) {
+    const day = this.tripState.days[dayIndex];
+    if (!day || itemIdx >= day.attractions.length - 1) return;
+    this.moveAttraction(dayIndex, itemIdx, itemIdx + 1);
+  },
+
+  setActiveDay(dayIndex) {
+    this.tripState.activeDayIndex = dayIndex;
+    this.render();
+    this.updateRoutes();
+    AppEvents.emit('day-changed', dayIndex);
+  },
+
+  debouncedUpdateRoutes() {
+    clearTimeout(this.debounceTimer);
+    this.debounceTimer = setTimeout(() => this.updateRoutes(), 300);
+  },
+
+  async updateRoutes() {
+    const { activeDayIndex, days } = this.tripState;
+
+    if (activeDayIndex === -1) {
+      const results = await MapManager.showAllDayRoutes(days);
+      this.routeResults = results;
+    } else {
+      MapManager.clearRoutes();
+      const result = await MapManager.showSingleDayRoute(activeDayIndex, days);
+      this.routeResults[activeDayIndex] = result;
+    }
+
+    this.renderRouteStats();
+  },
+
+  // ========== RENDER ==========
+  render() {
+    const container = document.getElementById('days-container');
+    if (!container) return;
+
+    let html = '';
+    const { days, activeDayIndex } = this.tripState;
+
+    for (let di = 0; di < days.length; di++) {
+      const day = days[di];
+      const color = DAY_COLORS[di % DAY_COLORS.length];
+      const isActive = activeDayIndex === -1 || activeDayIndex === di;
+      const totalMin = day.attractions.reduce((sum, id) => {
+        const a = getAttractionById(id);
+        return sum + (a ? a.duration : 0);
+      }, 0);
+
+      html += `
+        <div class="day-panel" style="border-left-color:${color}; ${isActive ? '' : 'opacity:0.5'}">
+          <div class="day-header" onclick="Planner.toggleDay(${di})">
+            <div class="day-header-left">
+              <span class="day-title" style="color:${color}">${day.label}</span>
+              <span class="day-count">${day.attractions.length} мест</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="day-stats" id="day-stats-${di}">
+                ${totalMin > 0 ? '⏱ ' + formatDuration(totalMin) + ' осмотр' : ''}
+              </span>
+              <button class="day-remove-btn" onclick="event.stopPropagation();Planner.removeDay(${di})" title="Удалить день">&times;</button>
+            </div>
+          </div>
+          <div class="day-body" id="day-body-${di}">`;
+
+      if (day.attractions.length === 0) {
+        html += `<div class="day-drop-zone"
+          ondragover="Planner.handleDragOver(event)"
+          ondrop="Planner.handleDrop(event, ${di}, 0)">
+          Перетащите места сюда или используйте кнопку +
+        </div>`;
+      } else {
+        for (let ai = 0; ai < day.attractions.length; ai++) {
+          const attrId = day.attractions[ai];
+          const attr = getAttractionById(attrId);
+          if (!attr) continue;
+          const cat = getCategoryById(attr.category_id);
+
+          html += `
+            <div class="day-item" draggable="true"
+              ondragstart="Planner.handleDragStart(event, ${di}, ${ai})"
+              ondragover="Planner.handleDragOver(event)"
+              ondragleave="Planner.handleDragLeave(event)"
+              ondrop="Planner.handleDrop(event, ${di}, ${ai})"
+              ondragend="Planner.handleDragEnd(event)"
+              onclick="MapManager.highlightAttraction('${attrId}')">
+              <span class="drag-handle">⠿</span>
+              <div class="day-item-num" style="background:${color}">${ai + 1}</div>
+              <div class="day-item-info">
+                <div class="day-item-name">${cat ? cat.emoji : ''} ${attr.name}</div>
+                <div class="day-item-dur">⏱ ${formatDuration(attr.duration)}</div>
+              </div>
+              <div class="day-item-move">
+                <button class="move-btn" onclick="event.stopPropagation();Planner.moveAttractionUp(${di},${ai})">▲</button>
+                <button class="move-btn" onclick="event.stopPropagation();Planner.moveAttractionDown(${di},${ai})">▼</button>
+              </div>
+              <button class="day-item-remove" onclick="event.stopPropagation();Planner.removeAttraction('${attrId}',${di})" title="Удалить">✕</button>
+            </div>`;
+        }
+      }
+
+      html += `</div></div>`;
+    }
+
+    container.innerHTML = html;
+
+    // Update trip summary
+    const totalAttr = days.reduce((s, d) => s + d.attractions.length, 0);
+    const summaryEl = document.getElementById('trip-summary');
+    if (summaryEl) {
+      summaryEl.textContent = `${days.length} дней, ${totalAttr} мест`;
+    }
+  },
+
+  renderRouteStats() {
+    for (let i = 0; i < this.tripState.days.length; i++) {
+      const el = document.getElementById(`day-stats-${i}`);
+      if (!el) continue;
+
+      const day = this.tripState.days[i];
+      const totalMin = day.attractions.reduce((sum, id) => {
+        const a = getAttractionById(id);
+        return sum + (a ? a.duration : 0);
+      }, 0);
+
+      const route = this.routeResults[i];
+      let text = totalMin > 0 ? `⏱ ${formatDuration(totalMin)} осмотр` : '';
+      if (route) {
+        text += ` | 🚗 ${formatDrivingTime(route.duration)}, ${formatDistance(route.distance)}`;
+      }
+      el.textContent = text;
+    }
+  },
+
+  toggleDay(dayIndex) {
+    const body = document.getElementById(`day-body-${dayIndex}`);
+    if (body) body.classList.toggle('collapsed');
+  },
+
+  // ========== DRAG & DROP ==========
+  dragData: null,
+
+  handleDragStart(e, dayIndex, itemIndex) {
+    this.dragData = { dayIndex, itemIndex };
+    e.dataTransfer.effectAllowed = 'move';
+    e.target.classList.add('dragging');
+  },
+
+  handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    e.currentTarget.classList.add('drag-over');
+  },
+
+  handleDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+  },
+
+  handleDrop(e, targetDayIndex, targetItemIndex) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+
+    if (!this.dragData) return;
+    const { dayIndex: srcDay, itemIndex: srcItem } = this.dragData;
+
+    if (srcDay === targetDayIndex) {
+      // Reorder within same day
+      this.moveAttraction(srcDay, srcItem, targetItemIndex);
+    } else {
+      // Move between days
+      const attrId = this.tripState.days[srcDay].attractions[srcItem];
+      this.tripState.days[srcDay].attractions.splice(srcItem, 1);
+      this.tripState.days[targetDayIndex].attractions.splice(targetItemIndex, 0, attrId);
+      this.routeResults[srcDay] = null;
+      this.routeResults[targetDayIndex] = null;
+      this.render();
+      this.debouncedUpdateRoutes();
+    }
+
+    this.dragData = null;
+  },
+
+  handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+    this.dragData = null;
+    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  },
+
+  // ========== EXPORT ==========
+  exportItinerary() {
+    const { days } = this.tripState;
+    let text = '🗺️ МОЙ МАРШРУТ ПО МАДЕЙРЕ\n';
+    text += `База: ${HOME_BASE.name}\n`;
+    text += '═'.repeat(40) + '\n\n';
+
+    for (let i = 0; i < days.length; i++) {
+      const day = days[i];
+      text += `📅 ${day.label}\n`;
+      text += '─'.repeat(30) + '\n';
+
+      if (day.attractions.length === 0) {
+        text += '  (пусто)\n';
+      } else {
+        text += `  🏠 Выезд из ${HOME_BASE.name}\n`;
+        for (let j = 0; j < day.attractions.length; j++) {
+          const attr = getAttractionById(day.attractions[j]);
+          if (!attr) continue;
+          const cat = getCategoryById(attr.category_id);
+          text += `  ${j + 1}. ${cat ? cat.emoji : ''} ${attr.name} (${formatDuration(attr.duration)})\n`;
+        }
+        text += `  🏠 Возвращение в ${HOME_BASE.name}\n`;
+
+        const route = this.routeResults[i];
+        if (route) {
+          text += `  🚗 Дорога: ${formatDrivingTime(route.duration)}, ${formatDistance(route.distance)}\n`;
+        }
+        const totalMin = day.attractions.reduce((s, id) => {
+          const a = getAttractionById(id);
+          return s + (a ? a.duration : 0);
+        }, 0);
+        if (totalMin > 0) text += `  ⏱ Осмотр: ${formatDuration(totalMin)}\n`;
+      }
+      text += '\n';
+    }
+
+    // Copy to clipboard
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        App.showToast('Маршрут скопирован в буфер обмена!');
+      });
+    } else {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      App.showToast('Маршрут скопирован в буфер обмена!');
+    }
+  }
+};
+</script>

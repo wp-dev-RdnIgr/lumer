@@ -1,0 +1,338 @@
+<script>
+// ========== EVENT BUS ==========
+const AppEvents = {
+  listeners: {},
+  on(event, fn) { (this.listeners[event] ||= []).push(fn); },
+  emit(event, data) { (this.listeners[event] || []).forEach(fn => fn(data)); }
+};
+
+// ========== APP CONTROLLER ==========
+const App = {
+  activeCategories: new Set(),
+  modalAttractionId: null,
+
+  async init() {
+    try {
+      // Load data from Supabase
+      await loadAllData();
+
+      // Init map
+      MapManager.init();
+      MapManager.createMarkers();
+
+      // Init planner
+      Planner.init(5);
+
+      // Setup UI
+      this.setupTabs();
+      this.setupCategoryFilters();
+      this.setupSearch();
+      this.renderAttractionsList();
+      this.renderPresets();
+      this.renderDaySelector();
+      this.setupModal();
+      this.setupExport();
+
+      // Listen for trip updates
+      AppEvents.on('trip-updated', () => this.renderDaySelector());
+      AppEvents.on('day-changed', () => this.renderDaySelector());
+
+      // Add cluster styles
+      this.addClusterStyles();
+
+      // Hide loading
+      document.getElementById('loading-overlay').classList.add('hidden');
+
+    } catch (err) {
+      console.error('Init error:', err);
+      document.getElementById('loading-overlay').innerHTML = `
+        <div class="modal" style="text-align:center;">
+          <h3>❌ Ошибка загрузки</h3>
+          <p style="color:#636e72;font-size:13px;margin-top:8px;">${err.message}</p>
+          <button onclick="location.reload()" class="btn-small" style="margin-top:12px;">Перезагрузить</button>
+        </div>`;
+    }
+  },
+
+  // ========== TABS ==========
+  setupTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+  },
+
+  // ========== CATEGORY FILTERS ==========
+  setupCategoryFilters() {
+    const container = document.getElementById('category-filters');
+    let html = '';
+
+    for (const cat of CATEGORIES) {
+      this.activeCategories.add(cat.id);
+      html += `
+        <label class="cat-filter-item">
+          <input type="checkbox" checked data-cat="${cat.id}" onchange="App.onFilterChange()">
+          <span class="cat-dot" style="background:${cat.color}"></span>
+          <span>${cat.emoji} ${cat.nameRu}</span>
+        </label>`;
+    }
+    container.innerHTML = html;
+
+    document.getElementById('btn-select-all').addEventListener('click', () => {
+      container.querySelectorAll('input').forEach(cb => { cb.checked = true; });
+      this.onFilterChange();
+    });
+    document.getElementById('btn-deselect-all').addEventListener('click', () => {
+      container.querySelectorAll('input').forEach(cb => { cb.checked = false; });
+      this.onFilterChange();
+    });
+  },
+
+  onFilterChange() {
+    this.activeCategories.clear();
+    document.querySelectorAll('#category-filters input:checked').forEach(cb => {
+      this.activeCategories.add(cb.dataset.cat);
+    });
+    MapManager.filterByCategories(this.activeCategories);
+    this.filterAttractionsList();
+  },
+
+  // ========== SEARCH ==========
+  setupSearch() {
+    document.getElementById('search-input').addEventListener('input', () => {
+      this.filterAttractionsList();
+    });
+  },
+
+  filterAttractionsList() {
+    const query = document.getElementById('search-input').value.toLowerCase().trim();
+    document.querySelectorAll('.attraction-card').forEach(card => {
+      const attrId = card.dataset.id;
+      const attr = getAttractionById(attrId);
+      if (!attr) return;
+
+      const matchesCategory = this.activeCategories.has(attr.category_id);
+      const matchesSearch = !query ||
+        attr.name.toLowerCase().includes(query) ||
+        (attr.description && attr.description.toLowerCase().includes(query));
+
+      card.style.display = (matchesCategory && matchesSearch) ? '' : 'none';
+    });
+  },
+
+  // ========== ATTRACTIONS LIST ==========
+  renderAttractionsList() {
+    const container = document.getElementById('attractions-list');
+    let html = '';
+
+    // Group by category
+    for (const cat of CATEGORIES) {
+      const catAttractions = ATTRACTIONS.filter(a => a.category_id === cat.id);
+      for (const attr of catAttractions) {
+        html += `
+          <div class="attraction-card" data-id="${attr.id}" onclick="MapManager.highlightAttraction('${attr.id}')">
+            <span class="attr-emoji">${cat.emoji}</span>
+            <div class="attr-info">
+              <div class="attr-name">${attr.name}</div>
+              <div class="attr-meta">
+                <span class="attr-duration">⏱ ${formatDuration(attr.duration)}</span>
+                <span class="attr-category-badge" style="background:${cat.color}">${cat.nameRu}</span>
+              </div>
+            </div>
+            <button class="attr-add-btn" onclick="event.stopPropagation();App.showAddModal('${attr.id}')" title="Добавить в маршрут">+</button>
+          </div>`;
+      }
+    }
+
+    container.innerHTML = html;
+  },
+
+  // ========== ADD TO DAY MODAL ==========
+  setupModal() {
+    document.getElementById('modal-close').addEventListener('click', () => this.hideModal());
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) this.hideModal();
+    });
+  },
+
+  showAddModal(attractionId) {
+    this.modalAttractionId = attractionId;
+    const attr = getAttractionById(attractionId);
+    document.getElementById('modal-title').textContent = `Добавить: ${attr ? attr.name : ''}`;
+
+    const body = document.getElementById('modal-body');
+    let html = '';
+    for (let i = 0; i < Planner.tripState.days.length; i++) {
+      const day = Planner.tripState.days[i];
+      const color = DAY_COLORS[i % DAY_COLORS.length];
+      const alreadyAdded = day.attractions.includes(attractionId);
+      html += `
+        <button class="modal-day-btn" onclick="App.addToDay(${i})" ${alreadyAdded ? 'disabled style="opacity:0.5"' : ''}>
+          <span class="modal-day-dot" style="background:${color}"></span>
+          ${day.label} ${alreadyAdded ? '(уже добавлено)' : `(${day.attractions.length} мест)`}
+        </button>`;
+    }
+    body.innerHTML = html;
+
+    document.getElementById('modal-overlay').classList.remove('hidden');
+  },
+
+  addToDay(dayIndex) {
+    if (this.modalAttractionId) {
+      Planner.addAttractionToDay(this.modalAttractionId, dayIndex);
+    }
+    this.hideModal();
+  },
+
+  hideModal() {
+    document.getElementById('modal-overlay').classList.add('hidden');
+    this.modalAttractionId = null;
+  },
+
+  // ========== PRESETS ==========
+  renderPresets() {
+    const container = document.getElementById('presets-list');
+    let html = '';
+
+    for (const preset of DEFAULT_ITINERARIES) {
+      html += `
+        <div class="preset-card">
+          <div class="preset-name">${preset.name}</div>
+          <div class="preset-desc">${preset.description || ''}</div>
+          <ul class="preset-days">`;
+
+      for (const day of preset.days) {
+        const names = day.attractionIds
+          .map(id => { const a = getAttractionById(id); return a ? a.name : id; })
+          .join(', ');
+        html += `
+          <li>
+            <span class="preset-day-label">День ${day.dayNumber}:</span>
+            <span class="preset-day-desc">${day.label} — ${names}</span>
+          </li>`;
+      }
+
+      html += `
+          </ul>
+          <button class="btn-load-preset" onclick="App.loadPreset('${preset.id}')">
+            Загрузить маршрут
+          </button>
+        </div>`;
+    }
+
+    container.innerHTML = html;
+  },
+
+  loadPreset(presetKey) {
+    const hasAttractions = Planner.tripState.days.some(d => d.attractions.length > 0);
+    if (hasAttractions) {
+      if (!confirm('Текущий маршрут будет заменён. Продолжить?')) return;
+    }
+    Planner.loadPreset(presetKey);
+
+    // Switch to "My Trip" tab
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector('[data-tab="tab-trip"]').classList.add('active');
+    document.getElementById('tab-trip').classList.add('active');
+
+    this.showToast('Маршрут загружен! Можете редактировать.');
+  },
+
+  // ========== DAY SELECTOR BAR ==========
+  renderDaySelector() {
+    const bar = document.getElementById('day-selector-bar');
+    if (!bar) return;
+
+    let html = `<button class="day-selector-btn ${Planner.tripState.activeDayIndex === -1 ? 'active' : ''}"
+      onclick="Planner.setActiveDay(-1)">Все</button>`;
+
+    for (let i = 0; i < Planner.tripState.days.length; i++) {
+      const day = Planner.tripState.days[i];
+      const color = DAY_COLORS[i % DAY_COLORS.length];
+      const isActive = Planner.tripState.activeDayIndex === i;
+      html += `<button class="day-selector-btn ${isActive ? 'active' : ''}"
+        style="${isActive ? `background:${color};color:#fff` : ''}"
+        onclick="Planner.setActiveDay(${i})">${day.label}</button>`;
+    }
+
+    bar.innerHTML = html;
+
+    // Update legend
+    this.renderLegend();
+  },
+
+  // ========== LEGEND ==========
+  renderLegend() {
+    const legend = document.getElementById('map-legend');
+    if (!legend) return;
+
+    let html = '<div class="legend-title">Маршруты</div>';
+    for (let i = 0; i < Planner.tripState.days.length; i++) {
+      const day = Planner.tripState.days[i];
+      const color = DAY_COLORS[i % DAY_COLORS.length];
+      if (day.attractions.length > 0) {
+        html += `<div class="legend-item">
+          <div class="legend-line" style="background:${color}"></div>
+          <span>${day.label}</span>
+        </div>`;
+      }
+    }
+    html += `<div class="legend-item">
+      <div class="legend-line" style="background:#2d3436"></div>
+      <span>🏠 ${HOME_BASE.name}</span>
+    </div>`;
+
+    legend.innerHTML = html;
+  },
+
+  // ========== EXPORT ==========
+  setupExport() {
+    document.getElementById('btn-export').addEventListener('click', () => {
+      Planner.exportItinerary();
+    });
+  },
+
+  // ========== TOAST ==========
+  showToast(message) {
+    let toast = document.querySelector('.toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  },
+
+  // ========== CLUSTER STYLES ==========
+  addClusterStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+      .cluster-icon {
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #fff;
+        font-size: 13px;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      }
+      .cluster-small { background: #3498db; width: 36px; height: 36px; }
+      .cluster-medium { background: #e67e22; width: 42px; height: 42px; font-size: 14px; }
+      .cluster-large { background: #e74c3c; width: 48px; height: 48px; font-size: 15px; }
+    `;
+    document.head.appendChild(style);
+  }
+};
+
+// ========== INIT ON LOAD ==========
+document.addEventListener('DOMContentLoaded', () => App.init());
+</script>

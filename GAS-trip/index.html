@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -13,13 +13,13 @@
   <!-- TOP BAR -->
   <header id="topbar">
     <div class="topbar-left">
-      <h1>🗺️ Madeira Trip Planner</h1>
+      <h1>🗺️ Мадейра — Планировщик</h1>
     </div>
     <div class="topbar-center" id="day-selector-bar">
-      <!-- Day buttons rendered by app.js -->
+      <!-- Кнопки дней рендерятся в app.js -->
     </div>
     <div class="topbar-right">
-      <button id="btn-export" class="btn-icon" title="Export itinerary">📋 Export</button>
+      <button id="btn-export" class="btn-icon" title="Экспорт маршрута">📋 Экспорт</button>
     </div>
   </header>
 
@@ -29,49 +29,49 @@
     <!-- SIDEBAR -->
     <aside id="sidebar">
       <div id="sidebar-tabs">
-        <button class="tab-btn active" data-tab="tab-attractions">Attractions</button>
-        <button class="tab-btn" data-tab="tab-trip">My Trip</button>
-        <button class="tab-btn" data-tab="tab-presets">Presets</button>
+        <button class="tab-btn active" data-tab="tab-attractions">Места</button>
+        <button class="tab-btn" data-tab="tab-trip">Мой маршрут</button>
+        <button class="tab-btn" data-tab="tab-presets">Готовые</button>
       </div>
 
-      <!-- TAB 1: ATTRACTIONS -->
+      <!-- TAB 1: ДОСТОПРИМЕЧАТЕЛЬНОСТИ -->
       <div id="tab-attractions" class="tab-panel active">
         <div class="search-box">
-          <input type="text" id="search-input" placeholder="🔍 Search attractions..." />
+          <input type="text" id="search-input" placeholder="🔍 Поиск мест..." />
         </div>
         <div class="filters-section">
           <div class="filters-header">
-            <span>Categories</span>
+            <span>Категории</span>
             <div class="filters-actions">
-              <button id="btn-select-all" class="btn-link">All</button>
-              <button id="btn-deselect-all" class="btn-link">None</button>
+              <button id="btn-select-all" class="btn-link">Все</button>
+              <button id="btn-deselect-all" class="btn-link">Сброс</button>
             </div>
           </div>
           <div id="category-filters" class="category-grid">
-            <!-- Checkboxes rendered by app.js -->
+            <!-- Чекбоксы рендерятся в app.js -->
           </div>
         </div>
         <div id="attractions-list" class="scrollable-list">
-          <!-- Attraction cards rendered by app.js -->
+          <!-- Карточки мест рендерятся в app.js -->
         </div>
       </div>
 
-      <!-- TAB 2: MY TRIP -->
+      <!-- TAB 2: МОЙ МАРШРУТ -->
       <div id="tab-trip" class="tab-panel">
         <div class="trip-header">
-          <button id="btn-add-day" class="btn-small">+ Add Day</button>
+          <button id="btn-add-day" class="btn-small">+ Добавить день</button>
           <span id="trip-summary" class="trip-summary"></span>
         </div>
         <div id="days-container" class="scrollable-list">
-          <!-- Day panels rendered by planner.js -->
+          <!-- Панели дней рендерятся в planner.js -->
         </div>
       </div>
 
-      <!-- TAB 3: PRESETS -->
+      <!-- TAB 3: ГОТОВЫЕ МАРШРУТЫ -->
       <div id="tab-presets" class="tab-panel">
-        <p class="presets-intro">Load a pre-built 5-day itinerary from Machico. You can edit it after loading.</p>
+        <p class="presets-intro">Загрузите готовый маршрут на 5 дней из Машику. Можно редактировать после загрузки.</p>
         <div id="presets-list">
-          <!-- Preset cards rendered by app.js -->
+          <!-- Карточки пресетов рендерятся в app.js -->
         </div>
       </div>
     </aside>
@@ -80,21 +80,29 @@
     <div id="map-container">
       <div id="map"></div>
       <div id="map-legend" class="map-legend">
-        <!-- Legend rendered by app.js -->
+        <!-- Легенда рендерится в app.js -->
       </div>
     </div>
   </div>
 
-  <!-- ADD TO DAY MODAL -->
+  <!-- МОДАЛКА: ДОБАВИТЬ В ДЕНЬ -->
   <div id="modal-overlay" class="modal-overlay hidden">
     <div class="modal">
       <div class="modal-header">
-        <h3 id="modal-title">Add to Day</h3>
+        <h3 id="modal-title">Добавить в день</h3>
         <button id="modal-close" class="btn-close">&times;</button>
       </div>
       <div id="modal-body" class="modal-body">
-        <!-- Day buttons rendered dynamically -->
+        <!-- Кнопки дней рендерятся динамически -->
       </div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loading-overlay" class="modal-overlay">
+    <div class="modal" style="text-align:center;">
+      <h3>⏳ Загрузка данных...</h3>
+      <p style="color:#636e72;font-size:13px;margin-top:8px;">Получаем достопримечательности Мадейры</p>
     </div>
   </div>
 
