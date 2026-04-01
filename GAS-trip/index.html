@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <?!= include('styles') ?>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header id="topbar">
+    <div class="topbar-left">
+      <h1>🗺️ Madeira Trip Planner</h1>
+    </div>
+    <div class="topbar-center" id="day-selector-bar">
+      <!-- Day buttons rendered by app.js -->
+    </div>
+    <div class="topbar-right">
+      <button id="btn-export" class="btn-icon" title="Export itinerary">📋 Export</button>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <div id="app-container">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <div id="sidebar-tabs">
+        <button class="tab-btn active" data-tab="tab-attractions">Attractions</button>
+        <button class="tab-btn" data-tab="tab-trip">My Trip</button>
+        <button class="tab-btn" data-tab="tab-presets">Presets</button>
+      </div>
+
+      <!-- TAB 1: ATTRACTIONS -->
+      <div id="tab-attractions" class="tab-panel active">
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="🔍 Search attractions..." />
+        </div>
+        <div class="filters-section">
+          <div class="filters-header">
+            <span>Categories</span>
+            <div class="filters-actions">
+              <button id="btn-select-all" class="btn-link">All</button>
+              <button id="btn-deselect-all" class="btn-link">None</button>
+            </div>
+          </div>
+          <div id="category-filters" class="category-grid">
+            <!-- Checkboxes rendered by app.js -->
+          </div>
+        </div>
+        <div id="attractions-list" class="scrollable-list">
+          <!-- Attraction cards rendered by app.js -->
+        </div>
+      </div>
+
+      <!-- TAB 2: MY TRIP -->
+      <div id="tab-trip" class="tab-panel">
+        <div class="trip-header">
+          <button id="btn-add-day" class="btn-small">+ Add Day</button>
+          <span id="trip-summary" class="trip-summary"></span>
+        </div>
+        <div id="days-container" class="scrollable-list">
+          <!-- Day panels rendered by planner.js -->
+        </div>
+      </div>
+
+      <!-- TAB 3: PRESETS -->
+      <div id="tab-presets" class="tab-panel">
+        <p class="presets-intro">Load a pre-built 5-day itinerary from Machico. You can edit it after loading.</p>
+        <div id="presets-list">
+          <!-- Preset cards rendered by app.js -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAP -->
+    <div id="map-container">
+      <div id="map"></div>
+      <div id="map-legend" class="map-legend">
+        <!-- Legend rendered by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD TO DAY MODAL -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Add to Day</h3>
+        <button id="modal-close" class="btn-close">&times;</button>
+      </div>
+      <div id="modal-body" class="modal-body">
+        <!-- Day buttons rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <?!= include('data') ?>
+  <?!= include('map') ?>
+  <?!= include('planner') ?>
+  <?!= include('app') ?>
+
+</body>
+</html>
