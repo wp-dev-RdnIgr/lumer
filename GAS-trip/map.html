@@ -1,15 +1,15 @@
 <script>
 // ========== MAP MANAGER ==========
-const MapManager = {
+var MapManager = {
   map: null,
   clusterGroup: null,
-  markersById: {},       // attractionId -> L.marker
-  routeLayers: [],       // active route polylines
-  stopMarkers: [],       // numbered stop markers
+  markersById: {},
+  routeLayers: [],
+  stopMarkers: [],
   homeMarker: null,
-  routeCache: {},        // hash -> {geometry, duration, distance}
+  routeCache: {},
 
-  init() {
+  init: function() {
     this.map = L.map('map', {
       center: [32.75, -16.95],
       zoom: 10,
@@ -28,12 +28,12 @@ const MapManager = {
       spiderfyOnMaxZoom: true,
       showCoverageOnHover: false,
       iconCreateFunction: function(cluster) {
-        const count = cluster.getChildCount();
-        let size = 'small';
+        var count = cluster.getChildCount();
+        var size = 'small';
         if (count > 10) size = 'medium';
         if (count > 25) size = 'large';
         return L.divIcon({
-          html: `<div class="cluster-icon cluster-${size}">${count}</div>`,
+          html: '<div class="cluster-icon cluster-' + size + '">' + count + '</div>',
           className: '',
           iconSize: [36, 36]
         });
@@ -41,7 +41,6 @@ const MapManager = {
     });
     this.map.addLayer(this.clusterGroup);
 
-    // Home marker (Machico)
     this.homeMarker = L.marker([HOME_BASE.lat, HOME_BASE.lng], {
       icon: L.divIcon({
         html: '<div class="home-marker">🏠</div>',
@@ -51,20 +50,21 @@ const MapManager = {
       }),
       zIndexOffset: 1000
     }).addTo(this.map);
-    this.homeMarker.bindPopup(`<div class="popup-content"><div class="popup-title">🏠 ${HOME_BASE.name}</div><div class="popup-desc">Ваша база на Мадейре</div></div>`);
+    this.homeMarker.bindPopup('<div class="popup-content"><div class="popup-title">🏠 ' + HOME_BASE.name + '</div><div class="popup-desc">Ваша база на Мадейре</div></div>');
   },
 
-  createMarkers() {
+  createMarkers: function() {
     this.clusterGroup.clearLayers();
     this.markersById = {};
 
-    for (const attr of ATTRACTIONS) {
-      const cat = getCategoryById(attr.category_id);
+    for (var a = 0; a < ATTRACTIONS.length; a++) {
+      var attr = ATTRACTIONS[a];
+      var cat = getCategoryById(attr.category_id);
       if (!cat) continue;
 
-      const marker = L.marker([attr.lat, attr.lng], {
+      var marker = L.marker([attr.lat, attr.lng], {
         icon: L.divIcon({
-          html: `<div class="custom-marker" style="background:${cat.color}">${cat.emoji}</div>`,
+          html: '<div class="custom-marker" style="background:' + cat.color + '">' + cat.emoji + '</div>',
           className: '',
           iconSize: [32, 32],
           iconAnchor: [16, 16],
@@ -72,121 +72,119 @@ const MapManager = {
         })
       });
 
-      const difficultyRu = { easy: 'легко', moderate: 'средне', hard: 'сложно' };
-      const diffText = attr.difficulty ? ` | ${difficultyRu[attr.difficulty] || attr.difficulty}` : '';
+      var difficultyRu = { easy: 'легко', moderate: 'средне', hard: 'сложно' };
+      var diffText = attr.difficulty ? ' | ' + (difficultyRu[attr.difficulty] || attr.difficulty) : '';
 
-      marker.bindPopup(`
-        <div class="popup-content">
-          ${Gallery.popupGalleryHtml(attr.id)}
-          <div class="popup-title">${cat.emoji} ${attr.name}</div>
-          <div class="popup-category" style="color:${cat.color}">${cat.nameRu}</div>
-          <div class="popup-desc">${attr.description || ''}</div>
-          ${attr.tips ? `<div class="popup-tips">💡 ${attr.tips}</div>` : ''}
-          <div class="popup-meta">⏱ ${formatDuration(attr.duration)}${diffText}</div>
-          <button class="popup-add-btn" onclick="App.showAddModal('${attr.id}')">+ Добавить в маршрут</button>
-        </div>
-      `, { maxWidth: 300, minWidth: 200 });
+      var galleryHtml = Gallery.popupGalleryHtml(attr.id);
+      var tipsHtml = attr.tips ? '<div class="popup-tips">💡 ' + attr.tips + '</div>' : '';
 
+      var popupHtml = '<div class="popup-content">' +
+        galleryHtml +
+        '<div class="popup-title">' + cat.emoji + ' ' + attr.name + '</div>' +
+        '<div class="popup-category" style="color:' + cat.color + '">' + cat.nameRu + '</div>' +
+        '<div class="popup-desc">' + (attr.description || '') + '</div>' +
+        tipsHtml +
+        '<div class="popup-meta">⏱ ' + formatDuration(attr.duration) + diffText + '</div>' +
+        '<button class="popup-add-btn" onclick="App.showAddModal(\'' + attr.id + '\')">+ Добавить в маршрут</button>' +
+        '</div>';
+
+      marker.bindPopup(popupHtml, { maxWidth: 300, minWidth: 200 });
       marker.attractionId = attr.id;
       this.markersById[attr.id] = marker;
       this.clusterGroup.addLayer(marker);
     }
   },
 
-  filterByCategories(activeCategories) {
+  filterByCategories: function(activeCategories) {
     this.clusterGroup.clearLayers();
-    for (const attr of ATTRACTIONS) {
+    for (var i = 0; i < ATTRACTIONS.length; i++) {
+      var attr = ATTRACTIONS[i];
       if (activeCategories.has(attr.category_id)) {
-        const marker = this.markersById[attr.id];
+        var marker = this.markersById[attr.id];
         if (marker) this.clusterGroup.addLayer(marker);
       }
     }
   },
 
-  highlightAttraction(attractionId) {
-    const marker = this.markersById[attractionId];
+  highlightAttraction: function(attractionId) {
+    var marker = this.markersById[attractionId];
     if (!marker) return;
-    this.clusterGroup.zoomToShowLayer(marker, () => {
+    this.clusterGroup.zoomToShowLayer(marker, function() {
       marker.openPopup();
     });
   },
 
-  clearRoutes() {
-    for (const layer of this.routeLayers) {
-      this.map.removeLayer(layer);
+  clearRoutes: function() {
+    for (var i = 0; i < this.routeLayers.length; i++) {
+      this.map.removeLayer(this.routeLayers[i]);
     }
     this.routeLayers = [];
-    for (const m of this.stopMarkers) {
-      this.map.removeLayer(m);
+    for (var j = 0; j < this.stopMarkers.length; j++) {
+      this.map.removeLayer(this.stopMarkers[j]);
     }
     this.stopMarkers = [];
   },
 
-  async showDayRoute(dayIndex, attractionIds, color) {
-    if (!attractionIds || attractionIds.length === 0) return null;
+  showDayRoute: function(dayIndex, attractionIds, color) {
+    var self = this;
+    if (!attractionIds || attractionIds.length === 0) return Promise.resolve(null);
 
-    // Build waypoints: Home -> attractions -> Home
-    const waypoints = [
-      [HOME_BASE.lng, HOME_BASE.lat],
-      ...attractionIds.map(id => {
-        const a = getAttractionById(id);
-        return a ? [a.lng, a.lat] : null;
-      }).filter(Boolean),
-      [HOME_BASE.lng, HOME_BASE.lat]
-    ];
+    var waypoints = [[HOME_BASE.lng, HOME_BASE.lat]];
+    for (var i = 0; i < attractionIds.length; i++) {
+      var a = getAttractionById(attractionIds[i]);
+      if (a) waypoints.push([a.lng, a.lat]);
+    }
+    waypoints.push([HOME_BASE.lng, HOME_BASE.lat]);
 
-    if (waypoints.length < 3) return null;
+    if (waypoints.length < 3) return Promise.resolve(null);
 
-    // Check cache
-    const cacheKey = waypoints.map(w => `${w[0].toFixed(4)},${w[1].toFixed(4)}`).join(';');
-    let routeData = this.routeCache[cacheKey];
+    var cacheKey = waypoints.map(function(w) { return w[0].toFixed(4) + ',' + w[1].toFixed(4); }).join(';');
+    var routeData = self.routeCache[cacheKey];
 
-    if (!routeData) {
-      try {
-        const coords = waypoints.map(w => `${w[0]},${w[1]}`).join(';');
-        const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
-        const resp = await fetch(url);
-        const data = await resp.json();
+    if (routeData) {
+      return Promise.resolve(self._drawRoute(routeData, attractionIds, color));
+    }
 
+    var coords = waypoints.map(function(w) { return w[0] + ',' + w[1]; }).join(';');
+    var url = 'https://router.project-osrm.org/route/v1/driving/' + coords + '?overview=full&geometries=geojson';
+
+    return fetch(url)
+      .then(function(resp) { return resp.json(); })
+      .then(function(data) {
         if (data.code === 'Ok' && data.routes && data.routes[0]) {
           routeData = {
             geometry: data.routes[0].geometry,
             duration: data.routes[0].duration,
             distance: data.routes[0].distance
           };
-          this.routeCache[cacheKey] = routeData;
+          self.routeCache[cacheKey] = routeData;
+          return self._drawRoute(routeData, attractionIds, color);
         }
-      } catch (err) {
-        console.error('OSRM routing error:', err);
-        // Fallback: draw straight lines
-        const fallbackCoords = waypoints.map(w => [w[1], w[0]]);
-        const line = L.polyline(fallbackCoords, {
-          color: color,
-          weight: 3,
-          opacity: 0.7,
-          dashArray: '8,8'
-        }).addTo(this.map);
-        this.routeLayers.push(line);
         return null;
-      }
-    }
+      })
+      .catch(function(err) {
+        console.error('OSRM routing error:', err);
+        var fallbackCoords = waypoints.map(function(w) { return [w[1], w[0]]; });
+        var line = L.polyline(fallbackCoords, {
+          color: color, weight: 3, opacity: 0.7, dashArray: '8,8'
+        }).addTo(self.map);
+        self.routeLayers.push(line);
+        return null;
+      });
+  },
 
-    if (!routeData) return null;
-
-    // Draw route polyline
-    const geoLayer = L.geoJSON(routeData.geometry, {
+  _drawRoute: function(routeData, attractionIds, color) {
+    var geoLayer = L.geoJSON(routeData.geometry, {
       style: { color: color, weight: 4, opacity: 0.8 }
     }).addTo(this.map);
     this.routeLayers.push(geoLayer);
 
-    // Add numbered stop markers (skip home start/end)
-    for (let i = 0; i < attractionIds.length; i++) {
-      const attr = getAttractionById(attractionIds[i]);
+    for (var i = 0; i < attractionIds.length; i++) {
+      var attr = getAttractionById(attractionIds[i]);
       if (!attr) continue;
-
-      const stopMarker = L.marker([attr.lat, attr.lng], {
+      var stopMarker = L.marker([attr.lat, attr.lng], {
         icon: L.divIcon({
-          html: `<div class="route-stop-marker" style="background:${color}">${i + 1}</div>`,
+          html: '<div class="route-stop-marker" style="background:' + color + '">' + (i + 1) + '</div>',
           className: '',
           iconSize: [26, 26],
           iconAnchor: [13, 13]
@@ -196,51 +194,54 @@ const MapManager = {
       this.stopMarkers.push(stopMarker);
     }
 
-    return {
-      duration: routeData.duration,
-      distance: routeData.distance
-    };
+    return { duration: routeData.duration, distance: routeData.distance };
   },
 
-  async showAllDayRoutes(days) {
+  showAllDayRoutes: function(days) {
     this.clearRoutes();
-    const results = [];
+    var self = this;
+    var results = [];
+    var chain = Promise.resolve();
 
-    for (let i = 0; i < days.length; i++) {
-      const color = DAY_COLORS[i % DAY_COLORS.length];
-      const result = await this.showDayRoute(i, days[i].attractions, color);
-      results.push(result);
-      // Small delay to avoid OSRM rate limiting
-      if (i < days.length - 1) {
-        await new Promise(r => setTimeout(r, 200));
+    for (var i = 0; i < days.length; i++) {
+      (function(idx) {
+        var color = DAY_COLORS[idx % DAY_COLORS.length];
+        chain = chain.then(function() {
+          return self.showDayRoute(idx, days[idx].attractions, color);
+        }).then(function(result) {
+          results[idx] = result;
+          if (idx < days.length - 1) {
+            return new Promise(function(r) { setTimeout(r, 200); });
+          }
+        });
+      })(i);
+    }
+
+    return chain.then(function() {
+      if (self.routeLayers.length > 0) {
+        var group = L.featureGroup(self.routeLayers);
+        self.map.fitBounds(group.getBounds().pad(0.1));
       }
-    }
-
-    // Fit bounds to all routes
-    if (this.routeLayers.length > 0) {
-      const group = L.featureGroup(this.routeLayers);
-      this.map.fitBounds(group.getBounds().pad(0.1));
-    }
-
-    return results;
+      return results;
+    });
   },
 
-  async showSingleDayRoute(dayIndex, days) {
+  showSingleDayRoute: function(dayIndex, days) {
     this.clearRoutes();
-    if (dayIndex < 0 || dayIndex >= days.length) return null;
+    var self = this;
+    if (dayIndex < 0 || dayIndex >= days.length) return Promise.resolve(null);
 
-    const color = DAY_COLORS[dayIndex % DAY_COLORS.length];
-    const result = await this.showDayRoute(dayIndex, days[dayIndex].attractions, color);
-
-    if (this.routeLayers.length > 0) {
-      const group = L.featureGroup(this.routeLayers);
-      this.map.fitBounds(group.getBounds().pad(0.1));
-    }
-
-    return result;
+    var color = DAY_COLORS[dayIndex % DAY_COLORS.length];
+    return this.showDayRoute(dayIndex, days[dayIndex].attractions, color).then(function(result) {
+      if (self.routeLayers.length > 0) {
+        var group = L.featureGroup(self.routeLayers);
+        self.map.fitBounds(group.getBounds().pad(0.1));
+      }
+      return result;
+    });
   },
 
-  resetView() {
+  resetView: function() {
     this.clearRoutes();
     this.map.setView([32.75, -16.95], 10);
   }

@@ -1,325 +1,290 @@
 <script>
 // ========== EVENT BUS ==========
-const AppEvents = {
+var AppEvents = {
   listeners: {},
-  on(event, fn) { (this.listeners[event] ||= []).push(fn); },
-  emit(event, data) { (this.listeners[event] || []).forEach(fn => fn(data)); }
+  on: function(event, fn) {
+    if (!this.listeners[event]) this.listeners[event] = [];
+    this.listeners[event].push(fn);
+  },
+  emit: function(event, data) {
+    var fns = this.listeners[event] || [];
+    for (var i = 0; i < fns.length; i++) fns[i](data);
+  }
 };
 
 // ========== APP CONTROLLER ==========
-const App = {
-  activeCategories: new Set(),
+var App = {
+  activeCategories: null,
   modalAttractionId: null,
 
-  async init() {
-    try {
-      // Load data from Supabase
-      await loadAllData();
+  init: function() {
+    var self = this;
+    self.activeCategories = {};
 
-      // Init map
+    loadAllData().then(function() {
       MapManager.init();
       MapManager.createMarkers();
-
-      // Init planner
       Planner.init(5);
 
-      // Setup UI
-      this.setupTabs();
-      this.setupCategoryFilters();
-      this.setupSearch();
-      this.renderAttractionsList();
-      this.renderPresets();
-      this.renderDaySelector();
-      this.setupModal();
-      this.setupExport();
+      self.setupTabs();
+      self.setupCategoryFilters();
+      self.setupSearch();
+      self.renderAttractionsList();
+      self.renderPresets();
+      self.renderDaySelector();
+      self.setupModal();
+      self.setupExport();
 
-      // Listen for trip updates
-      AppEvents.on('trip-updated', () => this.renderDaySelector());
-      AppEvents.on('day-changed', () => this.renderDaySelector());
+      AppEvents.on('trip-updated', function() { self.renderDaySelector(); });
+      AppEvents.on('day-changed', function() { self.renderDaySelector(); });
 
-      // Add cluster styles
-      this.addClusterStyles();
+      self.addClusterStyles();
+      self.setupMobileSidebar();
 
-      // Mobile sidebar swipe
-      this.setupMobileSidebar();
-
-      // Keyboard for fullscreen
-      document.addEventListener('keydown', (e) => {
-        if (!document.getElementById('fullscreen-viewer').classList.contains('hidden')) {
+      document.addEventListener('keydown', function(e) {
+        var viewer = document.getElementById('fullscreen-viewer');
+        if (viewer && !viewer.classList.contains('hidden')) {
           if (e.key === 'Escape') Gallery.closeFullscreen();
           if (e.key === 'ArrowLeft') Gallery.fullscreenPrev();
           if (e.key === 'ArrowRight') Gallery.fullscreenNext();
         }
       });
 
-      // Hide loading
       document.getElementById('loading-overlay').classList.add('hidden');
 
-    } catch (err) {
+    }).catch(function(err) {
       console.error('Init error:', err);
-      document.getElementById('loading-overlay').innerHTML = `
-        <div class="modal" style="text-align:center;">
-          <h3>❌ Ошибка загрузки</h3>
-          <p style="color:#636e72;font-size:13px;margin-top:8px;">${err.message}</p>
-          <button onclick="location.reload()" class="btn-small" style="margin-top:12px;">Перезагрузить</button>
-        </div>`;
-    }
-  },
-
-  // ========== TABS ==========
-  setupTabs() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
-      });
+      document.getElementById('loading-overlay').innerHTML =
+        '<div class="modal" style="text-align:center;">' +
+        '<h3>❌ Ошибка загрузки</h3>' +
+        '<p style="color:#636e72;font-size:13px;margin-top:8px;">' + (err.message || err) + '</p>' +
+        '<button onclick="location.reload()" class="btn-small" style="margin-top:12px;">Перезагрузить</button>' +
+        '</div>';
     });
   },
 
-  // ========== CATEGORY FILTERS ==========
-  setupCategoryFilters() {
-    const container = document.getElementById('category-filters');
-    let html = '';
+  setupTabs: function() {
+    var btns = document.querySelectorAll('.tab-btn');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener('click', function() {
+        var allBtns = document.querySelectorAll('.tab-btn');
+        var allPanels = document.querySelectorAll('.tab-panel');
+        for (var j = 0; j < allBtns.length; j++) allBtns[j].classList.remove('active');
+        for (var k = 0; k < allPanels.length; k++) allPanels[k].classList.remove('active');
+        this.classList.add('active');
+        document.getElementById(this.dataset.tab).classList.add('active');
+      });
+    }
+  },
 
-    for (const cat of CATEGORIES) {
-      this.activeCategories.add(cat.id);
-      html += `
-        <label class="cat-filter-item">
-          <input type="checkbox" checked data-cat="${cat.id}" onchange="App.onFilterChange()">
-          <span class="cat-dot" style="background:${cat.color}"></span>
-          <span>${cat.emoji} ${cat.nameRu}</span>
-        </label>`;
+  setupCategoryFilters: function() {
+    var self = this;
+    var container = document.getElementById('category-filters');
+    var html = '';
+
+    for (var i = 0; i < CATEGORIES.length; i++) {
+      var cat = CATEGORIES[i];
+      self.activeCategories[cat.id] = true;
+      html += '<label class="cat-filter-item">' +
+        '<input type="checkbox" checked data-cat="' + cat.id + '" onchange="App.onFilterChange()">' +
+        '<span class="cat-dot" style="background:' + cat.color + '"></span>' +
+        '<span>' + cat.emoji + ' ' + cat.nameRu + '</span></label>';
     }
     container.innerHTML = html;
 
-    document.getElementById('btn-select-all').addEventListener('click', () => {
-      container.querySelectorAll('input').forEach(cb => { cb.checked = true; });
-      this.onFilterChange();
+    document.getElementById('btn-select-all').addEventListener('click', function() {
+      var cbs = container.querySelectorAll('input');
+      for (var i = 0; i < cbs.length; i++) cbs[i].checked = true;
+      self.onFilterChange();
     });
-    document.getElementById('btn-deselect-all').addEventListener('click', () => {
-      container.querySelectorAll('input').forEach(cb => { cb.checked = false; });
-      this.onFilterChange();
+    document.getElementById('btn-deselect-all').addEventListener('click', function() {
+      var cbs = container.querySelectorAll('input');
+      for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
+      self.onFilterChange();
     });
   },
 
-  onFilterChange() {
-    this.activeCategories.clear();
-    document.querySelectorAll('#category-filters input:checked').forEach(cb => {
-      this.activeCategories.add(cb.dataset.cat);
-    });
-    MapManager.filterByCategories(this.activeCategories);
+  onFilterChange: function() {
+    this.activeCategories = {};
+    var checked = document.querySelectorAll('#category-filters input:checked');
+    for (var i = 0; i < checked.length; i++) {
+      this.activeCategories[checked[i].dataset.cat] = true;
+    }
+    MapManager.filterByCategories({ has: function(id) { return !!App.activeCategories[id]; } });
     this.filterAttractionsList();
   },
 
-  // ========== SEARCH ==========
-  setupSearch() {
-    document.getElementById('search-input').addEventListener('input', () => {
-      this.filterAttractionsList();
+  setupSearch: function() {
+    var self = this;
+    document.getElementById('search-input').addEventListener('input', function() {
+      self.filterAttractionsList();
     });
   },
 
-  filterAttractionsList() {
-    const query = document.getElementById('search-input').value.toLowerCase().trim();
-    document.querySelectorAll('.attraction-card').forEach(card => {
-      const attrId = card.dataset.id;
-      const attr = getAttractionById(attrId);
-      if (!attr) return;
-
-      const matchesCategory = this.activeCategories.has(attr.category_id);
-      const matchesSearch = !query ||
-        attr.name.toLowerCase().includes(query) ||
-        (attr.description && attr.description.toLowerCase().includes(query));
-
+  filterAttractionsList: function() {
+    var query = document.getElementById('search-input').value.toLowerCase().trim();
+    var cards = document.querySelectorAll('.attraction-card');
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var attrId = card.dataset.id;
+      var attr = getAttractionById(attrId);
+      if (!attr) continue;
+      var matchesCategory = !!this.activeCategories[attr.category_id];
+      var matchesSearch = !query ||
+        attr.name.toLowerCase().indexOf(query) !== -1 ||
+        (attr.description && attr.description.toLowerCase().indexOf(query) !== -1);
       card.style.display = (matchesCategory && matchesSearch) ? '' : 'none';
-    });
+    }
   },
 
-  // ========== ATTRACTIONS LIST ==========
-  renderAttractionsList() {
-    const container = document.getElementById('attractions-list');
-    let html = '';
+  renderAttractionsList: function() {
+    var container = document.getElementById('attractions-list');
+    var html = '';
 
-    // Group by category
-    for (const cat of CATEGORIES) {
-      const catAttractions = ATTRACTIONS.filter(a => a.category_id === cat.id);
-      for (const attr of catAttractions) {
-        const thumb = getAttractionThumb(attr.id);
-        const thumbHtml = thumb
-          ? `<img class="attr-card-thumb" src="${thumb}" alt="${attr.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display=''">`
+    for (var c = 0; c < CATEGORIES.length; c++) {
+      var cat = CATEGORIES[c];
+      var catAttractions = [];
+      for (var a = 0; a < ATTRACTIONS.length; a++) {
+        if (ATTRACTIONS[a].category_id === cat.id) catAttractions.push(ATTRACTIONS[a]);
+      }
+      for (var i = 0; i < catAttractions.length; i++) {
+        var attr = catAttractions[i];
+        var thumb = getAttractionThumb(attr.id);
+        var thumbHtml = thumb
+          ? '<img class="attr-card-thumb" src="' + thumb + '" alt="' + attr.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'">'
           : '';
-        const emojiHtml = thumb
-          ? `<span class="attr-emoji" style="display:none">${cat.emoji}</span>`
-          : `<span class="attr-emoji">${cat.emoji}</span>`;
+        var emojiHtml = thumb
+          ? '<span class="attr-emoji" style="display:none">' + cat.emoji + '</span>'
+          : '<span class="attr-emoji">' + cat.emoji + '</span>';
 
-        html += `
-          <div class="attraction-card" data-id="${attr.id}" onclick="MapManager.highlightAttraction('${attr.id}')">
-            ${thumbHtml}${emojiHtml}
-            <div class="attr-info">
-              <div class="attr-name">${attr.name}</div>
-              <div class="attr-meta">
-                <span class="attr-duration">⏱ ${formatDuration(attr.duration)}</span>
-                <span class="attr-category-badge" style="background:${cat.color}">${cat.nameRu}</span>
-              </div>
-            </div>
-            <button class="attr-add-btn" onclick="event.stopPropagation();App.showAddModal('${attr.id}')" title="Добавить в маршрут">+</button>
-          </div>`;
+        html += '<div class="attraction-card" data-id="' + attr.id + '" onclick="MapManager.highlightAttraction(\'' + attr.id + '\')">' +
+          thumbHtml + emojiHtml +
+          '<div class="attr-info"><div class="attr-name">' + attr.name + '</div>' +
+          '<div class="attr-meta"><span class="attr-duration">⏱ ' + formatDuration(attr.duration) + '</span>' +
+          '<span class="attr-category-badge" style="background:' + cat.color + '">' + cat.nameRu + '</span></div></div>' +
+          '<button class="attr-add-btn" onclick="event.stopPropagation();App.showAddModal(\'' + attr.id + '\')" title="Добавить в маршрут">+</button></div>';
       }
     }
-
     container.innerHTML = html;
   },
 
-  // ========== ADD TO DAY MODAL ==========
-  setupModal() {
-    document.getElementById('modal-close').addEventListener('click', () => this.hideModal());
-    document.getElementById('modal-overlay').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) this.hideModal();
+  setupModal: function() {
+    var self = this;
+    document.getElementById('modal-close').addEventListener('click', function() { self.hideModal(); });
+    document.getElementById('modal-overlay').addEventListener('click', function(e) {
+      if (e.target === e.currentTarget) self.hideModal();
     });
   },
 
-  showAddModal(attractionId) {
+  showAddModal: function(attractionId) {
     this.modalAttractionId = attractionId;
-    const attr = getAttractionById(attractionId);
-    document.getElementById('modal-title').textContent = `Добавить: ${attr ? attr.name : ''}`;
-
-    const body = document.getElementById('modal-body');
-    let html = '';
-    for (let i = 0; i < Planner.tripState.days.length; i++) {
-      const day = Planner.tripState.days[i];
-      const color = DAY_COLORS[i % DAY_COLORS.length];
-      const alreadyAdded = day.attractions.includes(attractionId);
-      html += `
-        <button class="modal-day-btn" onclick="App.addToDay(${i})" ${alreadyAdded ? 'disabled style="opacity:0.5"' : ''}>
-          <span class="modal-day-dot" style="background:${color}"></span>
-          ${day.label} ${alreadyAdded ? '(уже добавлено)' : `(${day.attractions.length} мест)`}
-        </button>`;
+    var attr = getAttractionById(attractionId);
+    document.getElementById('modal-title').textContent = 'Добавить: ' + (attr ? attr.name : '');
+    var body = document.getElementById('modal-body');
+    var html = '';
+    for (var i = 0; i < Planner.tripState.days.length; i++) {
+      var day = Planner.tripState.days[i];
+      var color = DAY_COLORS[i % DAY_COLORS.length];
+      var alreadyAdded = day.attractions.indexOf(attractionId) !== -1;
+      html += '<button class="modal-day-btn" onclick="App.addToDay(' + i + ')"' +
+        (alreadyAdded ? ' disabled style="opacity:0.5"' : '') + '>' +
+        '<span class="modal-day-dot" style="background:' + color + '"></span>' +
+        day.label + (alreadyAdded ? ' (уже добавлено)' : ' (' + day.attractions.length + ' мест)') +
+        '</button>';
     }
     body.innerHTML = html;
-
     document.getElementById('modal-overlay').classList.remove('hidden');
   },
 
-  addToDay(dayIndex) {
-    if (this.modalAttractionId) {
-      Planner.addAttractionToDay(this.modalAttractionId, dayIndex);
-    }
+  addToDay: function(dayIndex) {
+    if (this.modalAttractionId) Planner.addAttractionToDay(this.modalAttractionId, dayIndex);
     this.hideModal();
   },
 
-  hideModal() {
+  hideModal: function() {
     document.getElementById('modal-overlay').classList.add('hidden');
     this.modalAttractionId = null;
   },
 
-  // ========== PRESETS ==========
-  renderPresets() {
-    const container = document.getElementById('presets-list');
-    let html = '';
-
-    for (const preset of DEFAULT_ITINERARIES) {
-      html += `
-        <div class="preset-card">
-          <div class="preset-name">${preset.name}</div>
-          <div class="preset-desc">${preset.description || ''}</div>
-          <ul class="preset-days">`;
-
-      for (const day of preset.days) {
-        const names = day.attractionIds
-          .map(id => { const a = getAttractionById(id); return a ? a.name : id; })
-          .join(', ');
-        html += `
-          <li>
-            <span class="preset-day-label">День ${day.dayNumber}:</span>
-            <span class="preset-day-desc">${day.label} — ${names}</span>
-          </li>`;
+  renderPresets: function() {
+    var container = document.getElementById('presets-list');
+    var html = '';
+    for (var p = 0; p < DEFAULT_ITINERARIES.length; p++) {
+      var preset = DEFAULT_ITINERARIES[p];
+      html += '<div class="preset-card"><div class="preset-name">' + preset.name + '</div>' +
+        '<div class="preset-desc">' + (preset.description || '') + '</div><ul class="preset-days">';
+      for (var d = 0; d < preset.days.length; d++) {
+        var day = preset.days[d];
+        var names = [];
+        for (var n = 0; n < day.attractionIds.length; n++) {
+          var a = getAttractionById(day.attractionIds[n]);
+          names.push(a ? a.name : day.attractionIds[n]);
+        }
+        html += '<li><span class="preset-day-label">День ' + day.dayNumber + ':</span>' +
+          '<span class="preset-day-desc">' + day.label + ' — ' + names.join(', ') + '</span></li>';
       }
-
-      html += `
-          </ul>
-          <button class="btn-load-preset" onclick="App.loadPreset('${preset.id}')">
-            Загрузить маршрут
-          </button>
-        </div>`;
+      html += '</ul><button class="btn-load-preset" onclick="App.loadPreset(\'' + preset.id + '\')">Загрузить маршрут</button></div>';
     }
-
     container.innerHTML = html;
   },
 
-  loadPreset(presetKey) {
-    const hasAttractions = Planner.tripState.days.some(d => d.attractions.length > 0);
+  loadPreset: function(presetKey) {
+    var hasAttractions = false;
+    for (var i = 0; i < Planner.tripState.days.length; i++) {
+      if (Planner.tripState.days[i].attractions.length > 0) { hasAttractions = true; break; }
+    }
     if (hasAttractions) {
       if (!confirm('Текущий маршрут будет заменён. Продолжить?')) return;
     }
     Planner.loadPreset(presetKey);
-
-    // Switch to "My Trip" tab
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    var allBtns = document.querySelectorAll('.tab-btn');
+    var allPanels = document.querySelectorAll('.tab-panel');
+    for (var i = 0; i < allBtns.length; i++) allBtns[i].classList.remove('active');
+    for (var j = 0; j < allPanels.length; j++) allPanels[j].classList.remove('active');
     document.querySelector('[data-tab="tab-trip"]').classList.add('active');
     document.getElementById('tab-trip').classList.add('active');
-
     this.showToast('Маршрут загружен! Можете редактировать.');
   },
 
-  // ========== DAY SELECTOR BAR ==========
-  renderDaySelector() {
-    const bar = document.getElementById('day-selector-bar');
+  renderDaySelector: function() {
+    var bar = document.getElementById('day-selector-bar');
     if (!bar) return;
-
-    let html = `<button class="day-selector-btn ${Planner.tripState.activeDayIndex === -1 ? 'active' : ''}"
-      onclick="Planner.setActiveDay(-1)">Все</button>`;
-
-    for (let i = 0; i < Planner.tripState.days.length; i++) {
-      const day = Planner.tripState.days[i];
-      const color = DAY_COLORS[i % DAY_COLORS.length];
-      const isActive = Planner.tripState.activeDayIndex === i;
-      html += `<button class="day-selector-btn ${isActive ? 'active' : ''}"
-        style="${isActive ? `background:${color};color:#fff` : ''}"
-        onclick="Planner.setActiveDay(${i})">${day.label}</button>`;
+    var html = '<button class="day-selector-btn' + (Planner.tripState.activeDayIndex === -1 ? ' active' : '') + '" onclick="Planner.setActiveDay(-1)">Все</button>';
+    for (var i = 0; i < Planner.tripState.days.length; i++) {
+      var day = Planner.tripState.days[i];
+      var color = DAY_COLORS[i % DAY_COLORS.length];
+      var isActive = Planner.tripState.activeDayIndex === i;
+      html += '<button class="day-selector-btn' + (isActive ? ' active' : '') + '"' +
+        ' style="' + (isActive ? 'background:' + color + ';color:#fff' : '') + '"' +
+        ' onclick="Planner.setActiveDay(' + i + ')">' + day.label + '</button>';
     }
-
     bar.innerHTML = html;
-
-    // Update legend
     this.renderLegend();
   },
 
-  // ========== LEGEND ==========
-  renderLegend() {
-    const legend = document.getElementById('map-legend');
+  renderLegend: function() {
+    var legend = document.getElementById('map-legend');
     if (!legend) return;
-
-    let html = '<div class="legend-title">Маршруты</div>';
-    for (let i = 0; i < Planner.tripState.days.length; i++) {
-      const day = Planner.tripState.days[i];
-      const color = DAY_COLORS[i % DAY_COLORS.length];
+    var html = '<div class="legend-title">Маршруты</div>';
+    for (var i = 0; i < Planner.tripState.days.length; i++) {
+      var day = Planner.tripState.days[i];
+      var color = DAY_COLORS[i % DAY_COLORS.length];
       if (day.attractions.length > 0) {
-        html += `<div class="legend-item">
-          <div class="legend-line" style="background:${color}"></div>
-          <span>${day.label}</span>
-        </div>`;
+        html += '<div class="legend-item"><div class="legend-line" style="background:' + color + '"></div><span>' + day.label + '</span></div>';
       }
     }
-    html += `<div class="legend-item">
-      <div class="legend-line" style="background:#2d3436"></div>
-      <span>🏠 ${HOME_BASE.name}</span>
-    </div>`;
-
+    html += '<div class="legend-item"><div class="legend-line" style="background:#2d3436"></div><span>🏠 ' + HOME_BASE.name + '</span></div>';
     legend.innerHTML = html;
   },
 
-  // ========== EXPORT ==========
-  setupExport() {
-    document.getElementById('btn-export').addEventListener('click', () => {
+  setupExport: function() {
+    document.getElementById('btn-export').addEventListener('click', function() {
       Planner.exportItinerary();
     });
   },
 
-  // ========== TOAST ==========
-  showToast(message) {
-    let toast = document.querySelector('.toast');
+  showToast: function(message) {
+    var toast = document.querySelector('.toast');
     if (!toast) {
       toast = document.createElement('div');
       toast.className = 'toast';
@@ -327,72 +292,43 @@ const App = {
     }
     toast.textContent = message;
     toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2500);
+    setTimeout(function() { toast.classList.remove('show'); }, 2500);
   },
 
-  // ========== CLUSTER STYLES ==========
-  addClusterStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-      .cluster-icon {
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        color: #fff;
-        font-size: 13px;
-        border: 2px solid #fff;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      }
-      .cluster-small { background: #3498db; width: 36px; height: 36px; }
-      .cluster-medium { background: #e67e22; width: 42px; height: 42px; font-size: 14px; }
-      .cluster-large { background: #e74c3c; width: 48px; height: 48px; font-size: 15px; }
-    `;
+  addClusterStyles: function() {
+    var style = document.createElement('style');
+    style.textContent = '.cluster-icon{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:13px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3)}.cluster-small{background:#3498db;width:36px;height:36px}.cluster-medium{background:#e67e22;width:42px;height:42px;font-size:14px}.cluster-large{background:#e74c3c;width:48px;height:48px;font-size:15px}';
     document.head.appendChild(style);
   },
 
-  // ========== MOBILE SIDEBAR ==========
-  setupMobileSidebar() {
-    const sidebar = document.getElementById('sidebar');
+  setupMobileSidebar: function() {
+    var sidebar = document.getElementById('sidebar');
     if (!sidebar || window.innerWidth > 768) return;
+    var startY = 0, currentY = 0, isDragging = false;
 
-    let startY = 0;
-    let currentY = 0;
-    let isDragging = false;
-
-    sidebar.addEventListener('touchstart', (e) => {
-      // Only handle swipe on the handle area (top 20px)
-      const rect = sidebar.getBoundingClientRect();
-      const touchY = e.touches[0].clientY - rect.top;
+    sidebar.addEventListener('touchstart', function(e) {
+      var rect = sidebar.getBoundingClientRect();
+      var touchY = e.touches[0].clientY - rect.top;
       if (touchY > 30) return;
       startY = e.touches[0].clientY;
       isDragging = true;
     }, { passive: true });
 
-    sidebar.addEventListener('touchmove', (e) => {
+    sidebar.addEventListener('touchmove', function(e) {
       if (!isDragging) return;
       currentY = e.touches[0].clientY;
     }, { passive: true });
 
-    sidebar.addEventListener('touchend', () => {
+    sidebar.addEventListener('touchend', function() {
       if (!isDragging) return;
       isDragging = false;
-      const diff = currentY - startY;
-
-      if (diff > 50) {
-        // Swipe down: collapse
-        sidebar.classList.add('collapsed');
-        sidebar.classList.remove('expanded');
-      } else if (diff < -50) {
-        // Swipe up: expand
-        sidebar.classList.remove('collapsed');
-        sidebar.classList.add('expanded');
-      }
+      var diff = currentY - startY;
+      if (diff > 50) { sidebar.classList.add('collapsed'); sidebar.classList.remove('expanded'); }
+      else if (diff < -50) { sidebar.classList.remove('collapsed'); sidebar.classList.add('expanded'); }
     });
   }
 };
 
 // ========== INIT ON LOAD ==========
-document.addEventListener('DOMContentLoaded', () => App.init());
+document.addEventListener('DOMContentLoaded', function() { App.init(); });
 </script>
