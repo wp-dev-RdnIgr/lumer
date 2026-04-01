@@ -98,6 +98,15 @@
     </div>
   </div>
 
+  <!-- FULLSCREEN IMAGE VIEWER -->
+  <div id="fullscreen-viewer" class="fullscreen-viewer hidden" onclick="Gallery.closeFullscreen(event)">
+    <button class="fullscreen-close" onclick="Gallery.closeFullscreen()">&times;</button>
+    <button class="fullscreen-nav fullscreen-prev" onclick="event.stopPropagation();Gallery.fullscreenPrev()">‹</button>
+    <img id="fullscreen-img" src="" alt="" />
+    <button class="fullscreen-nav fullscreen-next" onclick="event.stopPropagation();Gallery.fullscreenNext()">›</button>
+    <div class="fullscreen-counter" id="fullscreen-counter"></div>
+  </div>
+
   <!-- LOADING -->
   <div id="loading-overlay" class="modal-overlay">
     <div class="modal" style="text-align:center;">

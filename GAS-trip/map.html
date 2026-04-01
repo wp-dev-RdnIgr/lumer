@@ -77,6 +77,7 @@ const MapManager = {
 
       marker.bindPopup(`
         <div class="popup-content">
+          ${Gallery.popupGalleryHtml(attr.id)}
           <div class="popup-title">${cat.emoji} ${attr.name}</div>
           <div class="popup-category" style="color:${cat.color}">${cat.nameRu}</div>
           <div class="popup-desc">${attr.description || ''}</div>
@@ -84,7 +85,7 @@ const MapManager = {
           <div class="popup-meta">⏱ ${formatDuration(attr.duration)}${diffText}</div>
           <button class="popup-add-btn" onclick="App.showAddModal('${attr.id}')">+ Добавить в маршрут</button>
         </div>
-      `, { maxWidth: 260 });
+      `, { maxWidth: 300, minWidth: 200 });
 
       marker.attractionId = attr.id;
       this.markersById[attr.id] = marker;

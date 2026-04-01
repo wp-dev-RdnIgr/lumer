@@ -43,6 +43,7 @@ const SupabaseClient = {
 let CATEGORIES = [];
 let ATTRACTIONS = [];
 let ATTRACTIONS_MAP = {};  // id -> attraction
+let IMAGES_MAP = {};       // attractionId -> [{url, alt}]
 let DEFAULT_ITINERARIES = [];
 
 // Russian category name mapping
@@ -61,11 +62,12 @@ const CATEGORY_NAMES_RU = {
 
 async function loadAllData() {
   try {
-    const [categories, attractions, presets, presetDays] = await Promise.all([
+    const [categories, attractions, presets, presetDays, images] = await Promise.all([
       SupabaseClient.query('categories', { select: '*', order: 'sort_order.asc' }),
       SupabaseClient.query('attractions', { select: '*', order: 'sort_order.asc' }),
       SupabaseClient.query('presets', { select: '*', order: 'sort_order.asc' }),
-      SupabaseClient.query('preset_days', { select: '*', order: 'day_number.asc' })
+      SupabaseClient.query('preset_days', { select: '*', order: 'day_number.asc' }),
+      SupabaseClient.query('attraction_images', { select: '*', order: 'sort_order.asc' })
     ]);
 
     // Apply Russian names
@@ -78,6 +80,13 @@ async function loadAllData() {
     ATTRACTIONS_MAP = {};
     for (const a of attractions) {
       ATTRACTIONS_MAP[a.id] = a;
+    }
+
+    // Build images map
+    IMAGES_MAP = {};
+    for (const img of images) {
+      if (!IMAGES_MAP[img.attraction_id]) IMAGES_MAP[img.attraction_id] = [];
+      IMAGES_MAP[img.attraction_id].push({ url: img.url, alt: img.alt || '' });
     }
 
     // Build presets with nested days
@@ -93,7 +102,7 @@ async function loadAllData() {
         }))
     }));
 
-    console.log(`Loaded: ${CATEGORIES.length} categories, ${ATTRACTIONS.length} attractions, ${DEFAULT_ITINERARIES.length} presets`);
+    console.log(`Loaded: ${CATEGORIES.length} categories, ${ATTRACTIONS.length} attractions, ${Object.keys(IMAGES_MAP).length} with images, ${DEFAULT_ITINERARIES.length} presets`);
     return true;
   } catch (err) {
     console.error('Failed to load data:', err);
@@ -135,4 +144,112 @@ function formatDistance(meters) {
   if (meters < 1000) return `${Math.round(meters)} м`;
   return `${(meters / 1000).toFixed(1)} км`;
 }
+
+// Helper: get images for attraction
+function getAttractionImages(attractionId) {
+  return IMAGES_MAP[attractionId] || [];
+}
+
+// Helper: get thumbnail URL (first image, small)
+function getAttractionThumb(attractionId) {
+  const imgs = IMAGES_MAP[attractionId];
+  if (!imgs || imgs.length === 0) return null;
+  // Use Wikimedia thumb resize if possible
+  return imgs[0].url.replace('/800px-', '/200px-');
+}
+
+// ========== GALLERY MODULE ==========
+const Gallery = {
+  currentImages: [],
+  currentIndex: 0,
+  currentAttractionId: null,
+
+  // Generate popup gallery HTML
+  popupGalleryHtml(attractionId) {
+    const images = getAttractionImages(attractionId);
+    if (images.length === 0) return '';
+
+    const dotsHtml = images.length > 1
+      ? `<div class="popup-gallery-dots">${images.map((_, i) =>
+          `<button class="popup-gallery-dot${i === 0 ? ' active' : ''}" onclick="event.stopPropagation();Gallery.goToSlide('${attractionId}',${i})"></button>`
+        ).join('')}</div>`
+      : '';
+
+    const navHtml = images.length > 1
+      ? `<button class="popup-gallery-nav popup-gallery-prev" onclick="event.stopPropagation();Gallery.prevSlide('${attractionId}')">‹</button>
+         <button class="popup-gallery-nav popup-gallery-next" onclick="event.stopPropagation();Gallery.nextSlide('${attractionId}')">›</button>`
+      : '';
+
+    return `
+      <div class="popup-gallery" id="gallery-${attractionId}" onclick="Gallery.openFullscreen('${attractionId}',0)">
+        <img src="${images[0].url}" alt="${images[0].alt}" loading="lazy" onerror="this.parentElement.style.display='none'" />
+        ${navHtml}
+        ${dotsHtml}
+      </div>`;
+  },
+
+  goToSlide(attractionId, index) {
+    const images = getAttractionImages(attractionId);
+    if (!images[index]) return;
+    const gallery = document.getElementById(`gallery-${attractionId}`);
+    if (!gallery) return;
+    gallery.querySelector('img').src = images[index].url;
+    gallery.querySelector('img').alt = images[index].alt;
+    gallery.querySelectorAll('.popup-gallery-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === index);
+    });
+    gallery.dataset.index = index;
+  },
+
+  prevSlide(attractionId) {
+    const gallery = document.getElementById(`gallery-${attractionId}`);
+    const images = getAttractionImages(attractionId);
+    let idx = parseInt(gallery?.dataset?.index || 0) - 1;
+    if (idx < 0) idx = images.length - 1;
+    this.goToSlide(attractionId, idx);
+  },
+
+  nextSlide(attractionId) {
+    const gallery = document.getElementById(`gallery-${attractionId}`);
+    const images = getAttractionImages(attractionId);
+    let idx = parseInt(gallery?.dataset?.index || 0) + 1;
+    if (idx >= images.length) idx = 0;
+    this.goToSlide(attractionId, idx);
+  },
+
+  // Fullscreen viewer
+  openFullscreen(attractionId, startIndex) {
+    this.currentImages = getAttractionImages(attractionId);
+    this.currentIndex = startIndex || 0;
+    this.currentAttractionId = attractionId;
+    this.updateFullscreen();
+    document.getElementById('fullscreen-viewer').classList.remove('hidden');
+  },
+
+  updateFullscreen() {
+    const img = this.currentImages[this.currentIndex];
+    if (!img) return;
+    // Use larger image for fullscreen
+    const fullUrl = img.url.replace('/800px-', '/1200px-');
+    document.getElementById('fullscreen-img').src = fullUrl;
+    document.getElementById('fullscreen-img').alt = img.alt;
+    document.getElementById('fullscreen-counter').textContent =
+      `${this.currentIndex + 1} / ${this.currentImages.length}`;
+  },
+
+  closeFullscreen(e) {
+    if (e && e.target !== e.currentTarget && e.target.id !== 'fullscreen-viewer') return;
+    document.getElementById('fullscreen-viewer').classList.add('hidden');
+  },
+
+  fullscreenPrev() {
+    this.currentIndex = (this.currentIndex - 1 + this.currentImages.length) % this.currentImages.length;
+    this.updateFullscreen();
+  },
+
+  fullscreenNext() {
+    this.currentIndex = (this.currentIndex + 1) % this.currentImages.length;
+    this.updateFullscreen();
+  }
+};
 </script>
