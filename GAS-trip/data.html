@@ -1,43 +1,10 @@
 <script>
-// ========== SUPABASE CONFIG ==========
-const SUPABASE_URL = 'https://cnswkvifvywkjadbsjfd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNuc3drdmlmdnl3a2phZGJzamZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwMjY1MzMsImV4cCI6MjA5MDYwMjUzM30.u05IFU13TsxGPlnRokUeIxEr0bNn5wBgaAl_cRRqYO0';
-
+// ========== CONFIG ==========
 // Machico home base
 const HOME_BASE = { lat: 32.7189, lng: -16.7676, name: 'Машику (база)' };
 
 // Day route colors
 const DAY_COLORS = ['#e74c3c', '#3498db', '#27ae60', '#f39c12', '#8e44ad', '#1abc9c', '#e67e22'];
-
-// ========== SUPABASE REST CLIENT ==========
-const SupabaseClient = {
-  async query(table, options = {}) {
-    let url = `${SUPABASE_URL}/rest/v1/${table}`;
-    const params = new URLSearchParams();
-
-    if (options.select) params.set('select', options.select);
-    if (options.order) params.set('order', options.order);
-    if (options.eq) {
-      for (const [col, val] of Object.entries(options.eq)) {
-        params.set(col, `eq.${val}`);
-      }
-    }
-
-    const queryStr = params.toString();
-    if (queryStr) url += '?' + queryStr;
-
-    const resp = await fetch(url, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!resp.ok) throw new Error(`Supabase error: ${resp.status} ${resp.statusText}`);
-    return resp.json();
-  }
-};
 
 // ========== DATA STORE ==========
 let CATEGORIES = [];
@@ -60,59 +27,65 @@ const CATEGORY_NAMES_RU = {
   'churches': 'Наследие и церкви'
 };
 
-async function loadAllData() {
-  try {
-    const [categories, attractions, presets, presetDays, images] = await Promise.all([
-      SupabaseClient.query('categories', { select: '*', order: 'sort_order.asc' }),
-      SupabaseClient.query('attractions', { select: '*', order: 'sort_order.asc' }),
-      SupabaseClient.query('presets', { select: '*', order: 'sort_order.asc' }),
-      SupabaseClient.query('preset_days', { select: '*', order: 'day_number.asc' }),
-      SupabaseClient.query('attraction_images', { select: '*', order: 'sort_order.asc' })
-    ]);
+/**
+ * Load all data from Supabase via server-side proxy (Code.gs -> UrlFetchApp)
+ * This avoids CORS/sandbox issues in GAS iframe
+ */
+function loadAllData() {
+  return new Promise(function(resolve, reject) {
+    google.script.run
+      .withSuccessHandler(function(data) {
+        try {
+          // Apply Russian names
+          CATEGORIES = data.categories.map(function(c) {
+            return Object.assign({}, c, { nameRu: CATEGORY_NAMES_RU[c.id] || c.name });
+          });
 
-    // Apply Russian names
-    CATEGORIES = categories.map(c => ({
-      ...c,
-      nameRu: CATEGORY_NAMES_RU[c.id] || c.name
-    }));
+          ATTRACTIONS = data.attractions;
+          ATTRACTIONS_MAP = {};
+          data.attractions.forEach(function(a) {
+            ATTRACTIONS_MAP[a.id] = a;
+          });
 
-    ATTRACTIONS = attractions;
-    ATTRACTIONS_MAP = {};
-    for (const a of attractions) {
-      ATTRACTIONS_MAP[a.id] = a;
-    }
+          // Build images map
+          IMAGES_MAP = {};
+          data.images.forEach(function(img) {
+            if (!IMAGES_MAP[img.attraction_id]) IMAGES_MAP[img.attraction_id] = [];
+            IMAGES_MAP[img.attraction_id].push({ url: img.url, alt: img.alt || '' });
+          });
 
-    // Build images map
-    IMAGES_MAP = {};
-    for (const img of images) {
-      if (!IMAGES_MAP[img.attraction_id]) IMAGES_MAP[img.attraction_id] = [];
-      IMAGES_MAP[img.attraction_id].push({ url: img.url, alt: img.alt || '' });
-    }
+          // Build presets with nested days
+          DEFAULT_ITINERARIES = data.presets.map(function(p) {
+            return Object.assign({}, p, {
+              days: data.presetDays
+                .filter(function(d) { return d.preset_id === p.id; })
+                .sort(function(a, b) { return a.day_number - b.day_number; })
+                .map(function(d) {
+                  return {
+                    dayNumber: d.day_number,
+                    label: d.label,
+                    attractionIds: d.attraction_ids || []
+                  };
+                })
+            });
+          });
 
-    // Build presets with nested days
-    DEFAULT_ITINERARIES = presets.map(p => ({
-      ...p,
-      days: presetDays
-        .filter(d => d.preset_id === p.id)
-        .sort((a, b) => a.day_number - b.day_number)
-        .map(d => ({
-          dayNumber: d.day_number,
-          label: d.label,
-          attractionIds: d.attraction_ids || []
-        }))
-    }));
-
-    console.log(`Loaded: ${CATEGORIES.length} categories, ${ATTRACTIONS.length} attractions, ${Object.keys(IMAGES_MAP).length} with images, ${DEFAULT_ITINERARIES.length} presets`);
-    return true;
-  } catch (err) {
-    console.error('Failed to load data:', err);
-    throw err;
-  }
+          console.log('Loaded: ' + CATEGORIES.length + ' categories, ' + ATTRACTIONS.length + ' attractions, ' + Object.keys(IMAGES_MAP).length + ' with images, ' + DEFAULT_ITINERARIES.length + ' presets');
+          resolve(true);
+        } catch (err) {
+          reject(err);
+        }
+      })
+      .withFailureHandler(function(err) {
+        reject(new Error(err.message || 'Server error loading data'));
+      })
+      .getAllData();
+  });
 }
 
 // Helper: get category by id
 function getCategoryById(id) {
-  return CATEGORIES.find(c => c.id === id);
+  return CATEGORIES.find(function(c) { return c.id === id; });
 }
 
 // Helper: get attraction by id
@@ -122,27 +95,27 @@ function getAttractionById(id) {
 
 // Helper: format duration in Russian
 function formatDuration(minutes) {
-  if (minutes < 60) return `${minutes} мин`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (m === 0) return `${h} ч`;
-  return `${h} ч ${m} мин`;
+  if (minutes < 60) return minutes + ' мин';
+  var h = Math.floor(minutes / 60);
+  var m = minutes % 60;
+  if (m === 0) return h + ' ч';
+  return h + ' ч ' + m + ' мин';
 }
 
 // Helper: format driving time
 function formatDrivingTime(seconds) {
-  const minutes = Math.round(seconds / 60);
-  if (minutes < 60) return `${minutes} мин`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (m === 0) return `${h} ч`;
-  return `${h} ч ${m} мин`;
+  var minutes = Math.round(seconds / 60);
+  if (minutes < 60) return minutes + ' мин';
+  var h = Math.floor(minutes / 60);
+  var m = minutes % 60;
+  if (m === 0) return h + ' ч';
+  return h + ' ч ' + m + ' мин';
 }
 
 // Helper: format distance
 function formatDistance(meters) {
-  if (meters < 1000) return `${Math.round(meters)} м`;
-  return `${(meters / 1000).toFixed(1)} км`;
+  if (meters < 1000) return Math.round(meters) + ' м';
+  return (meters / 1000).toFixed(1) + ' км';
 }
 
 // Helper: get images for attraction
@@ -152,73 +125,73 @@ function getAttractionImages(attractionId) {
 
 // Helper: get thumbnail URL (first image, small)
 function getAttractionThumb(attractionId) {
-  const imgs = IMAGES_MAP[attractionId];
+  var imgs = IMAGES_MAP[attractionId];
   if (!imgs || imgs.length === 0) return null;
-  // Use Wikimedia thumb resize if possible
   return imgs[0].url.replace('/800px-', '/200px-');
 }
 
 // ========== GALLERY MODULE ==========
-const Gallery = {
+var Gallery = {
   currentImages: [],
   currentIndex: 0,
   currentAttractionId: null,
 
-  // Generate popup gallery HTML
-  popupGalleryHtml(attractionId) {
-    const images = getAttractionImages(attractionId);
+  popupGalleryHtml: function(attractionId) {
+    var images = getAttractionImages(attractionId);
     if (images.length === 0) return '';
 
-    const dotsHtml = images.length > 1
-      ? `<div class="popup-gallery-dots">${images.map((_, i) =>
-          `<button class="popup-gallery-dot${i === 0 ? ' active' : ''}" onclick="event.stopPropagation();Gallery.goToSlide('${attractionId}',${i})"></button>`
-        ).join('')}</div>`
-      : '';
+    var dotsHtml = '';
+    if (images.length > 1) {
+      dotsHtml = '<div class="popup-gallery-dots">';
+      for (var i = 0; i < images.length; i++) {
+        dotsHtml += '<button class="popup-gallery-dot' + (i === 0 ? ' active' : '') + '" onclick="event.stopPropagation();Gallery.goToSlide(\'' + attractionId + '\',' + i + ')"></button>';
+      }
+      dotsHtml += '</div>';
+    }
 
-    const navHtml = images.length > 1
-      ? `<button class="popup-gallery-nav popup-gallery-prev" onclick="event.stopPropagation();Gallery.prevSlide('${attractionId}')">‹</button>
-         <button class="popup-gallery-nav popup-gallery-next" onclick="event.stopPropagation();Gallery.nextSlide('${attractionId}')">›</button>`
-      : '';
+    var navHtml = '';
+    if (images.length > 1) {
+      navHtml = '<button class="popup-gallery-nav popup-gallery-prev" onclick="event.stopPropagation();Gallery.prevSlide(\'' + attractionId + '\')">‹</button>' +
+        '<button class="popup-gallery-nav popup-gallery-next" onclick="event.stopPropagation();Gallery.nextSlide(\'' + attractionId + '\')">›</button>';
+    }
 
-    return `
-      <div class="popup-gallery" id="gallery-${attractionId}" onclick="Gallery.openFullscreen('${attractionId}',0)">
-        <img src="${images[0].url}" alt="${images[0].alt}" loading="lazy" onerror="this.parentElement.style.display='none'" />
-        ${navHtml}
-        ${dotsHtml}
-      </div>`;
+    return '<div class="popup-gallery" id="gallery-' + attractionId + '" onclick="Gallery.openFullscreen(\'' + attractionId + '\',0)">' +
+      '<img src="' + images[0].url + '" alt="' + images[0].alt + '" loading="lazy" onerror="this.parentElement.style.display=\'none\'" />' +
+      navHtml + dotsHtml + '</div>';
   },
 
-  goToSlide(attractionId, index) {
-    const images = getAttractionImages(attractionId);
+  goToSlide: function(attractionId, index) {
+    var images = getAttractionImages(attractionId);
     if (!images[index]) return;
-    const gallery = document.getElementById(`gallery-${attractionId}`);
+    var gallery = document.getElementById('gallery-' + attractionId);
     if (!gallery) return;
     gallery.querySelector('img').src = images[index].url;
     gallery.querySelector('img').alt = images[index].alt;
-    gallery.querySelectorAll('.popup-gallery-dot').forEach((d, i) => {
-      d.classList.toggle('active', i === index);
-    });
+    var dots = gallery.querySelectorAll('.popup-gallery-dot');
+    for (var i = 0; i < dots.length; i++) {
+      if (i === index) dots[i].classList.add('active');
+      else dots[i].classList.remove('active');
+    }
     gallery.dataset.index = index;
   },
 
-  prevSlide(attractionId) {
-    const gallery = document.getElementById(`gallery-${attractionId}`);
-    const images = getAttractionImages(attractionId);
-    let idx = parseInt(gallery?.dataset?.index || 0) - 1;
+  prevSlide: function(attractionId) {
+    var gallery = document.getElementById('gallery-' + attractionId);
+    var images = getAttractionImages(attractionId);
+    var idx = parseInt(gallery && gallery.dataset.index || 0) - 1;
     if (idx < 0) idx = images.length - 1;
     this.goToSlide(attractionId, idx);
   },
 
-  nextSlide(attractionId) {
-    const gallery = document.getElementById(`gallery-${attractionId}`);
-    const images = getAttractionImages(attractionId);
-    let idx = parseInt(gallery?.dataset?.index || 0) + 1;
+  nextSlide: function(attractionId) {
+    var gallery = document.getElementById('gallery-' + attractionId);
+    var images = getAttractionImages(attractionId);
+    var idx = parseInt(gallery && gallery.dataset.index || 0) + 1;
     if (idx >= images.length) idx = 0;
     this.goToSlide(attractionId, idx);
   },
 
-  // Fullscreen viewer
-  openFullscreen(attractionId, startIndex) {
+  openFullscreen: function(attractionId, startIndex) {
     this.currentImages = getAttractionImages(attractionId);
     this.currentIndex = startIndex || 0;
     this.currentAttractionId = attractionId;
@@ -226,28 +199,27 @@ const Gallery = {
     document.getElementById('fullscreen-viewer').classList.remove('hidden');
   },
 
-  updateFullscreen() {
-    const img = this.currentImages[this.currentIndex];
+  updateFullscreen: function() {
+    var img = this.currentImages[this.currentIndex];
     if (!img) return;
-    // Use larger image for fullscreen
-    const fullUrl = img.url.replace('/800px-', '/1200px-');
+    var fullUrl = img.url.replace('/800px-', '/1200px-');
     document.getElementById('fullscreen-img').src = fullUrl;
     document.getElementById('fullscreen-img').alt = img.alt;
     document.getElementById('fullscreen-counter').textContent =
-      `${this.currentIndex + 1} / ${this.currentImages.length}`;
+      (this.currentIndex + 1) + ' / ' + this.currentImages.length;
   },
 
-  closeFullscreen(e) {
+  closeFullscreen: function(e) {
     if (e && e.target !== e.currentTarget && e.target.id !== 'fullscreen-viewer') return;
     document.getElementById('fullscreen-viewer').classList.add('hidden');
   },
 
-  fullscreenPrev() {
+  fullscreenPrev: function() {
     this.currentIndex = (this.currentIndex - 1 + this.currentImages.length) % this.currentImages.length;
     this.updateFullscreen();
   },
 
-  fullscreenNext() {
+  fullscreenNext: function() {
     this.currentIndex = (this.currentIndex + 1) % this.currentImages.length;
     this.updateFullscreen();
   }
