@@ -40,6 +40,18 @@ const App = {
       // Add cluster styles
       this.addClusterStyles();
 
+      // Mobile sidebar swipe
+      this.setupMobileSidebar();
+
+      // Keyboard for fullscreen
+      document.addEventListener('keydown', (e) => {
+        if (!document.getElementById('fullscreen-viewer').classList.contains('hidden')) {
+          if (e.key === 'Escape') Gallery.closeFullscreen();
+          if (e.key === 'ArrowLeft') Gallery.fullscreenPrev();
+          if (e.key === 'ArrowRight') Gallery.fullscreenNext();
+        }
+      });
+
       // Hide loading
       document.getElementById('loading-overlay').classList.add('hidden');
 
@@ -133,9 +145,17 @@ const App = {
     for (const cat of CATEGORIES) {
       const catAttractions = ATTRACTIONS.filter(a => a.category_id === cat.id);
       for (const attr of catAttractions) {
+        const thumb = getAttractionThumb(attr.id);
+        const thumbHtml = thumb
+          ? `<img class="attr-card-thumb" src="${thumb}" alt="${attr.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display=''">`
+          : '';
+        const emojiHtml = thumb
+          ? `<span class="attr-emoji" style="display:none">${cat.emoji}</span>`
+          : `<span class="attr-emoji">${cat.emoji}</span>`;
+
         html += `
           <div class="attraction-card" data-id="${attr.id}" onclick="MapManager.highlightAttraction('${attr.id}')">
-            <span class="attr-emoji">${cat.emoji}</span>
+            ${thumbHtml}${emojiHtml}
             <div class="attr-info">
               <div class="attr-name">${attr.name}</div>
               <div class="attr-meta">
@@ -332,6 +352,46 @@ const App = {
     document.head.appendChild(style);
   }
 };
+
+  // ========== MOBILE SIDEBAR ==========
+  setupMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar || window.innerWidth > 768) return;
+
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
+
+    sidebar.addEventListener('touchstart', (e) => {
+      // Only handle swipe on the handle area (top 20px)
+      const rect = sidebar.getBoundingClientRect();
+      const touchY = e.touches[0].clientY - rect.top;
+      if (touchY > 30) return;
+      startY = e.touches[0].clientY;
+      isDragging = true;
+    }, { passive: true });
+
+    sidebar.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      currentY = e.touches[0].clientY;
+    }, { passive: true });
+
+    sidebar.addEventListener('touchend', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      const diff = currentY - startY;
+
+      if (diff > 50) {
+        // Swipe down: collapse
+        sidebar.classList.add('collapsed');
+        sidebar.classList.remove('expanded');
+      } else if (diff < -50) {
+        // Swipe up: expand
+        sidebar.classList.remove('collapsed');
+        sidebar.classList.add('expanded');
+      }
+    });
+  },
 
 // ========== INIT ON LOAD ==========
 document.addEventListener('DOMContentLoaded', () => App.init());
