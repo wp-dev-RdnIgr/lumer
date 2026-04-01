@@ -350,8 +350,7 @@ const App = {
       .cluster-large { background: #e74c3c; width: 48px; height: 48px; font-size: 15px; }
     `;
     document.head.appendChild(style);
-  }
-};
+  },
 
   // ========== MOBILE SIDEBAR ==========
   setupMobileSidebar() {
@@ -391,7 +390,8 @@ const App = {
         sidebar.classList.add('expanded');
       }
     });
-  },
+  }
+};
 
 // ========== INIT ON LOAD ==========
 document.addEventListener('DOMContentLoaded', () => App.init());
